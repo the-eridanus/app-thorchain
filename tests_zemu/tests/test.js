@@ -188,7 +188,7 @@ describe('Basic checks', function () {
             await sim.start(sim_options);
             const app = new CosmosApp(sim.getTransport());
             // Derivation path. First 3 items are automatically hardened!
-            const path = [44, 118, 5, 0, 3];
+            const path = [44, 931, 5, 0, 3];
             const resp = await app.getAddressAndPubKey(path, "cosmos");
 
             console.log(resp);
@@ -225,7 +225,7 @@ describe('Basic checks', function () {
             const app = new CosmosApp(sim.getTransport());
 
             // Derivation path. First 3 items are automatically hardened!
-            const path = [44, 118, 5, 0, 3];
+            const path = [44, 931, 5, 0, 3];
             const respRequest = app.showAddressAndPubKey(path, "cosmos");
 
             // We need to wait until the app responds to the APDU
@@ -263,7 +263,7 @@ describe('Basic checks', function () {
             const app = new CosmosApp(sim.getTransport());
 
             // Derivation path. First 3 items are automatically hardened!
-            const path = [44, 118, 2147483647, 0, 4294967295];
+            const path = [44, 931, 2147483647, 0, 4294967295];
             const resp = await app.showAddressAndPubKey(path, "cosmos");
             console.log(resp);
 
@@ -289,7 +289,7 @@ describe('Basic checks', function () {
             await sim.clickBoth(`${snapshotPrefixTmp}${snapshotCount++}.png`);
 
             // Derivation path. First 3 items are automatically hardened!
-            const path = [44, 118, 2147483647, 0, 4294967295];
+            const path = [44, 931, 2147483647, 0, 4294967295];
             const respRequest = app.showAddressAndPubKey(path, "cosmos");
 
             // We need to wait until the app responds to the APDU
@@ -333,7 +333,7 @@ describe('Basic checks', function () {
             await sim.start(sim_options);
             const app = new CosmosApp(sim.getTransport());
 
-            const path = [44, 118, 0, 0, 0];
+            const path = [44, 931, 0, 0, 0];
             let tx = JSON.stringify(example_tx_str_basic);
 
             // get address / publickey
@@ -389,7 +389,7 @@ describe('Basic checks', function () {
             await sim.start(sim_options);
             const app = new CosmosApp(sim.getTransport());
 
-            const path = [44, 118, 0, 0, 0];
+            const path = [44, 931, 0, 0, 0];
             let tx = JSON.stringify(example_tx_str_combined);
 
             // get address / publickey
@@ -445,7 +445,7 @@ describe('Basic checks', function () {
             await sim.start(sim_options);
             const app = new CosmosApp(sim.getTransport());
 
-            const path = [44, 118, 0, 0, 0];
+            const path = [44, 931, 0, 0, 0];
             let tx = JSON.stringify(example_tx_str_basic);
 
             // get address / publickey
@@ -515,7 +515,7 @@ describe('Basic checks', function () {
             await sim.start(sim_options);
             const app = new CosmosApp(sim.getTransport());
 
-            const path = [44, 118, 0, 0, 0];
+            const path = [44, 931, 0, 0, 0];
             let tx = JSON.stringify(example_tx_str_expert);
 
             // get address / publickey

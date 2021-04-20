@@ -41,18 +41,18 @@ typedef enum {
 #define VIEW_ADDRESS_OFFSET_SECP256K1       PK_LEN_SECP256K1
 #define VIEW_ADDRESS_LAST_PAGE_DEFAULT      0
 
-#define MENU_MAIN_APP_LINE1                "Cosmos"
+#define MENU_MAIN_APP_LINE1                "Thorchain"
 #define MENU_MAIN_APP_LINE2                "ready"
 #define APPVERSION_LINE1                   "Version:"
 #define APPVERSION_LINE2                   ("v" APPVERSION)
 
 #define CRYPTO_BLOB_SKIP_BYTES              0
-#define COIN_DEFAULT_CHAINID                "cosmoshub-3"
+#define COIN_DEFAULT_CHAINID                "THOR.RUNE"
 
 // In non-expert mode, the app will convert from uatom to ATOM
-#define COIN_DEFAULT_DENOM_BASE             "uatom"
-#define COIN_DEFAULT_DENOM_REPR             "ATOM"
-#define COIN_DEFAULT_DENOM_FACTOR           6
+#define COIN_DEFAULT_DENOM_BASE             "sat"
+#define COIN_DEFAULT_DENOM_REPR             "RUNE"
+#define COIN_DEFAULT_DENOM_FACTOR           8
 
 #ifdef __cplusplus
 }

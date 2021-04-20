@@ -62,7 +62,7 @@ async function beforeEnd() {
 }
 
 async function debugScenario(sim, app) {
-    const path = [44, 118, 0, 0, 0];
+    const path = [44, 931, 0, 0, 0];
     let tx = JSON.stringify(example_tx_str);
 
 //    await Zemu.default.sleep(120000);
