@@ -25,7 +25,7 @@ MY_DIR := $(dir $(lastword $(MAKEFILE_LIST)))
 include $(BOLOS_SDK)/Makefile.defines
 
 # Main app configuration
-APPNAME = "Thorchain"
+APPNAME = "THORChain"
 APPVERSION_M=0
 APPVERSION_N=0
 APPVERSION_P=1

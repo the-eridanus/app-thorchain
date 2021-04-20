@@ -41,7 +41,7 @@ typedef enum {
 #define VIEW_ADDRESS_OFFSET_SECP256K1       PK_LEN_SECP256K1
 #define VIEW_ADDRESS_LAST_PAGE_DEFAULT      0
 
-#define MENU_MAIN_APP_LINE1                "Thorchain"
+#define MENU_MAIN_APP_LINE1                "THORChain"
 #define MENU_MAIN_APP_LINE2                "ready"
 #define APPVERSION_LINE1                   "Version:"
 #define APPVERSION_LINE2                   ("v" APPVERSION)
@@ -50,7 +50,7 @@ typedef enum {
 #define COIN_DEFAULT_CHAINID                "THOR.RUNE"
 
 // In non-expert mode, the app will convert from uatom to ATOM
-#define COIN_DEFAULT_DENOM_BASE             "sat"
+#define COIN_DEFAULT_DENOM_BASE             "tor"
 #define COIN_DEFAULT_DENOM_REPR             "RUNE"
 #define COIN_DEFAULT_DENOM_FACTOR           8
 

@@ -1,4 +1,4 @@
-# Thorchain App - Ledger Nano S
+# THORChain App - Ledger Nano S
 ## General structure
 
 The general structure of commands and responses is as follows:

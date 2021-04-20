@@ -1,10 +1,10 @@
-# Ledger Thorchain app
+# Ledger THORChain app
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![CodeFactor](https://www.codefactor.io/repository/github/HildisviniOttar/ledger-thorchain/badge)](https://www.codefactor.io/repository/github/HildisviniOttar/ledger-thorchain)
 
-This project contains the Thorchain app for Ledger Nano S and X.
+This project contains the THORChain app for Ledger Nano S and X.
 
-- Ledger Nano S/X Thorchain app
+- Ledger Nano S/X THORChain app
 - Specs / Documentation
 - C++ unit tests
 - Zemu tests
