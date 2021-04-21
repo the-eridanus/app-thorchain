@@ -131,29 +131,21 @@ parser_error_t tx_validate(parsed_json_t *json) {
     uint16_t token_index;
     parser_error_t err;
 
-    err = object_get_value(json, 0, "chain_id", &token_index);
-    if (err != parser_ok)
-        return parser_json_missing_chain_id;
-
-    err = object_get_value(json, 0, "sequence", &token_index);
-    if (err != parser_ok)
-        return parser_json_missing_sequence;
-
     err = object_get_value(json, 0, "fee", &token_index);
     if (err != parser_ok)
         return parser_json_missing_fee;
 
-    err = object_get_value(json, 0, "msgs", &token_index);
-    if (err != parser_ok)
-        return parser_json_missing_msgs;
-
-    err = object_get_value(json, 0, "account_number", &token_index);
-    if (err != parser_ok)
-        return parser_json_missing_account_number;
-
     err = object_get_value(json, 0, "memo", &token_index);
     if (err != parser_ok)
         return parser_json_missing_memo;
+
+    err = object_get_value(json, 0, "msg", &token_index);
+    if (err != parser_ok)
+        return parser_json_missing_msg;
+
+    err = object_get_value(json, 0, "signatures", &token_index);
+    if (err != parser_ok)
+        return parser_json_missing_signatures;
 
     return parser_ok;
 }

@@ -86,18 +86,14 @@ const char *parser_getErrorDescription(parser_error_t err) {
             return "JSON Contains whitespace in the corpus";
         case parser_json_is_not_sorted:
             return "JSON Dictionaries are not sorted";
-        case parser_json_missing_chain_id:
-            return "JSON Missing chain_id";
-        case parser_json_missing_sequence:
-            return "JSON Missing sequence";
         case parser_json_missing_fee:
             return "JSON Missing fee";
-        case parser_json_missing_msgs:
-            return "JSON Missing msgs";
-        case parser_json_missing_account_number:
-            return "JSON Missing account number";
         case parser_json_missing_memo:
             return "JSON Missing memo";
+        case parser_json_missing_msg:
+            return "JSON Missing msg";
+        case parser_json_missing_signatures:
+            return "JSON Missing signatures";
         case parser_json_unexpected_error:
             return "JSON Unexpected error";
 

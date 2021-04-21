@@ -56,12 +56,11 @@ typedef enum {
     parser_json_incomplete_json,    // "JSON string is not complete";
     parser_json_contains_whitespace,
     parser_json_is_not_sorted,
-    parser_json_missing_chain_id,
-    parser_json_missing_sequence,
     parser_json_missing_fee,
-    parser_json_missing_msgs,
-    parser_json_missing_account_number,
     parser_json_missing_memo,
+    parser_json_missing_msg,
+    parser_json_missing_signatures,
+
     parser_json_unexpected_error,
 } parser_error_t;
 
