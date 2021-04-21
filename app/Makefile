@@ -26,7 +26,7 @@ include $(BOLOS_SDK)/Makefile.defines
 
 # Main app configuration
 APPNAME = "THORChain"
-APPVERSION_M=1
+APPVERSION_M=2
 APPVERSION_N=0
 APPVERSION_P=0
 
