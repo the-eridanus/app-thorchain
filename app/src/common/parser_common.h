@@ -59,7 +59,6 @@ typedef enum {
     parser_json_missing_fee,
     parser_json_missing_memo,
     parser_json_missing_msg,
-    parser_json_missing_signatures,
 
     parser_json_unexpected_error,
 } parser_error_t;

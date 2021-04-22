@@ -92,8 +92,6 @@ const char *parser_getErrorDescription(parser_error_t err) {
             return "JSON Missing memo";
         case parser_json_missing_msg:
             return "JSON Missing msg";
-        case parser_json_missing_signatures:
-            return "JSON Missing signatures";
         case parser_json_unexpected_error:
             return "JSON Unexpected error";
 

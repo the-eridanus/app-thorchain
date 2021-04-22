@@ -50,14 +50,8 @@ __Z_INLINE void strcat_chunk_s(char *dst, uint16_t dst_max, const char *src_chun
 ///////////////////////////
 
 static const key_subst_t value_substitutions[] = {
-        {"cosmos-sdk/MsgSend",                     "Send"},
-        {"cosmos-sdk/MsgDelegate",                 "Delegate"},
-        {"cosmos-sdk/MsgUndelegate",               "Undelegate"},
-        {"cosmos-sdk/MsgBeginRedelegate",          "Redelegate"},
-        {"cosmos-sdk/MsgSubmitProposal",           "Propose"},
-        {"cosmos-sdk/MsgDeposit",                  "Deposit"},
-        {"cosmos-sdk/MsgVote",                     "Vote"},
-        {"cosmos-sdk/MsgWithdrawDelegationReward", "Withdraw Reward"},
+        {"thorchain/MsgSend",                     "Send"},
+        {"thorchain/MsgDeposit",                  "DEPOSIT"},
 };
 
 parser_error_t tx_getToken(uint16_t token_index,

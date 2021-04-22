@@ -143,9 +143,9 @@ parser_error_t tx_validate(parsed_json_t *json) {
     if (err != parser_ok)
         return parser_json_missing_msg;
 
-    err = object_get_value(json, 0, "signatures", &token_index);
-    if (err != parser_ok)
-        return parser_json_missing_signatures;
+//    err = object_get_value(json, 0, "signatures", &token_index);
+//    if (err != parser_ok)
+//        return parser_json_missing_signatures;
 
     return parser_ok;
 }

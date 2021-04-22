@@ -21,22 +21,16 @@
 #include "parser_impl.h"
 #include <zxmacros.h>
 
-#define NUM_REQUIRED_ROOT_PAGES 6
+#define NUM_REQUIRED_ROOT_PAGES 3
 
 const char *get_required_root_item(root_item_e i) {
     switch (i) {
-        case root_item_chain_id:
-            return "chain_id";
-        case root_item_account_number:
-            return "account_number";
-        case root_item_sequence:
-            return "sequence";
         case root_item_fee:
             return "fee";
         case root_item_memo:
             return "memo";
-        case root_item_msgs:
-            return "msgs";
+        case root_item_msg:
+            return "msg";
         default:
             return "?";
     }
@@ -44,18 +38,12 @@ const char *get_required_root_item(root_item_e i) {
 
 __Z_INLINE uint8_t get_root_max_level(root_item_e i) {
     switch (i) {
-        case root_item_chain_id:
-            return 2;
-        case root_item_account_number:
-            return 2;
-        case root_item_sequence:
-            return 2;
         case root_item_fee:
-            return 1;
+            return 2;
         case root_item_memo:
-            return 2;
-        case root_item_msgs:
-            return 2;
+            return 1;
+        case root_item_msg:
+            return 3;
         default:
             return 0;
     }
@@ -79,37 +67,6 @@ display_cache_t display_cache;
 parser_error_t tx_display_readTx(parser_context_t *ctx, const uint8_t *data, size_t dataLen) {
     CHECK_PARSER_ERR(parser_init(ctx, data, dataLen))
     CHECK_PARSER_ERR(_readTx(ctx, &parser_tx_obj))
-    return parser_ok;
-}
-
-__Z_INLINE parser_error_t calculate_is_default_chainid() {
-    display_cache.is_default_chain = false;
-
-    // get chain_id
-    char outKey[2];
-    char outVal[20];
-    uint8_t pageCount;
-    INIT_QUERY_CONTEXT(outKey, sizeof(outKey),
-                       outVal, sizeof(outVal),
-                       0, get_root_max_level(root_item_chain_id))
-    parser_tx_obj.query.item_index = 0;
-    parser_tx_obj.query._item_index_current = 0;
-
-    uint16_t ret_value_token_index;
-    CHECK_PARSER_ERR(tx_traverse_find(
-            display_cache.root_item_start_token_idx[root_item_chain_id],
-            &ret_value_token_index))
-
-    CHECK_PARSER_ERR(tx_getToken(
-            ret_value_token_index,
-            outVal, sizeof(outVal),
-            0, &pageCount))
-
-    if (strcmp(outVal, COIN_DEFAULT_CHAINID) != 0) {
-        // If we don't match the default chainid, switch to expert mode
-        display_cache.is_default_chain = true;
-    }
-
     return parser_ok;
 }
 
@@ -200,7 +157,7 @@ parser_error_t tx_indexRootFields() {
                     }
                     break;
                 }
-                case root_item_msgs: {
+                case root_item_msg: {
                     // GROUPING: Message Type
                     if (parser_tx_obj.flags.msg_type_grouping && is_msg_type_field(tmp_key)) {
                         // First message, initialize expected type
@@ -252,8 +209,6 @@ parser_error_t tx_indexRootFields() {
 
     parser_tx_obj.flags.cache_valid = 1;
 
-    CHECK_PARSER_ERR(calculate_is_default_chainid());
-
     // turn off grouping if we are not in expert mode
     if (tx_is_expert_mode()) {
         parser_tx_obj.flags.msg_from_grouping = 0;
@@ -268,13 +223,9 @@ parser_error_t tx_indexRootFields() {
     return parser_ok;
 }
 
-__Z_INLINE bool is_default_chainid() {
-    CHECK_PARSER_ERR(tx_indexRootFields());
-    return display_cache.is_default_chain;
-}
 
 bool tx_is_expert_mode() {
-    return app_mode_expert() || is_default_chainid();
+    return app_mode_expert();
 }
 
 __Z_INLINE uint8_t get_subitem_count(root_item_e root_item) {
@@ -284,15 +235,9 @@ __Z_INLINE uint8_t get_subitem_count(root_item_e root_item) {
 
     int16_t tmp_num_items = display_cache.root_item_number_subitems[root_item];
 
+    // Correct for expert_mode (show/hide items)
     switch (root_item) {
-        case root_item_chain_id:
-        case root_item_sequence:
-        case root_item_account_number:
-            if (!tx_is_expert_mode()) {
-                tmp_num_items = 0;
-            }
-            break;
-        case root_item_msgs:
+        case root_item_msg:
             // Remove grouped items from list
             if (parser_tx_obj.flags.msg_type_grouping == 1u && parser_tx_obj.filter_msg_type_count > 0) {
                 tmp_num_items += 1; // we leave main type
@@ -305,12 +250,6 @@ __Z_INLINE uint8_t get_subitem_count(root_item_e root_item) {
                 tmp_num_items -= parser_tx_obj.filter_msg_from_count;
             }
             break;
-        case root_item_memo:
-            break;
-        case root_item_fee:
-            if (!tx_is_expert_mode()) {
-                tmp_num_items -= 1;     // Hide Gas field
-            }
         default:
             break;
     }
@@ -411,59 +350,20 @@ parser_error_t tx_display_query(uint16_t displayIdx,
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 
 static const key_subst_t key_substitutions[] = {
-        {"chain_id",                          "Chain ID"},
-        {"account_number",                    "Account"},
-        {"sequence",                          "Sequence"},
+        // Common
         {"memo",                              "Memo"},
-        {"fee/amount",                        "Fee"},
-        {"fee/gas",                           "Gas"},
-        {"msgs/type",                         "Type"},
-
-        // FIXME: Are these obsolete?? multisend?
-        {"msgs/inputs/address",               "Source Address"},
-        {"msgs/inputs/coins",                 "Source Coins"},
-        {"msgs/outputs/address",              "Dest Address"},
-        {"msgs/outputs/coins",                "Dest Coins"},
+        {"fee/gas",                           "Fee"},
+        {"msg/type",                         "Type"},
 
         // MsgSend
-        {"msgs/value/from_address",           "From"},
-        {"msgs/value/to_address",             "To"},
-        {"msgs/value/amount",                 "Amount"},
-
-        // MsgDelegate
-        {"msgs/value/delegator_address",      "Delegator"},
-        {"msgs/value/validator_address",      "Validator"},
-
-        // MsgUndelegate
-//        {"msgs/value/delegator_address", "Delegator"},
-//        {"msgs/value/validator_address", "Validator"},
-
-        // MsgBeginRedelegate
-//        {"msgs/value/delegator_address", "Delegator"},
-        {"msgs/value/validator_src_address",  "Validator Source"},
-        {"msgs/value/validator_dst_address",  "Validator Dest"},
-
-        // MsgSubmitProposal
-        {"msgs/value/description",            "Description"},
-        {"msgs/value/initial_deposit/amount", "Deposit Amount"},
-        {"msgs/value/initial_deposit/denom",  "Deposit Denom"},
-        {"msgs/value/proposal_type",          "Proposal"},
-        {"msgs/value/proposer",               "Proposer"},
-        {"msgs/value/title",                  "Title"},
+        {"msg/value/from_address",           "From"},
+        {"msg/value/to_address",             "To"},
+        {"msg/value/amount/amount",          "Amount"},
 
         // MsgDeposit
-        {"msgs/value/depositer",              "Sender"},
-        {"msgs/value/proposal_id",            "Proposal ID"},
-        {"msgs/value/amount",                 "Amount"},
-
-        // MsgVote
-        {"msgs/value/voter",                  "Description"},
-//        {"msgs/value/proposal_id",              "Proposal ID"},
-        {"msgs/value/option",                 "Option"},
-
-        // MsgWithdrawDelegationReward
-//        {"msgs/value/delegator_address", "Delegator"},      // duplicated
-//        {"msgs/value/validator_address", "Validator"},      // duplicated
+        {"msg/value/signer",                  "Sender"},
+        {"msg/value/memo",                    "Memo"},
+        {"msg/value/coins/amount",            "Amount"},
 };
 
 parser_error_t tx_display_make_friendly() {

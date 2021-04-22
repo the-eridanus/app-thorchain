@@ -81,13 +81,7 @@ __Z_INLINE bool_t parser_isAmount(char *key) {
     if (strcmp(key, "fee/amount") == 0)
         return bool_true;
 
-    if (strcmp(key, "msgs/inputs/coins") == 0)
-        return bool_true;
-
-    if (strcmp(key, "msgs/outputs/coins") == 0)
-        return bool_true;
-
-    if (strcmp(key, "msgs/value/amount") == 0)
+    if (strcmp(key, "msg/value/coins") == 0)
         return bool_true;
 
     return bool_false;
@@ -98,14 +92,7 @@ __Z_INLINE bool_t is_default_denom_base(const char *denom, uint8_t denom_len) {
         return false;
     }
 
-    if (strlen(COIN_DEFAULT_DENOM_BASE) != denom_len) {
-        return bool_false;
-    }
-
-    if (memcmp(denom, COIN_DEFAULT_DENOM_BASE, denom_len) == 0)
-        return bool_true;
-
-    return bool_false;
+    return true;  // Always in tor
 }
 
 __Z_INLINE parser_error_t parser_formatAmount(uint16_t amountToken,
