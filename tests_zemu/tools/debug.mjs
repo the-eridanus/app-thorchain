@@ -12,41 +12,7 @@ const SIM_OPTIONS = {
     custom: `-s "${seed}" --color LAGOON_BLUE`
 };
 
-const example_tx_str = {
-    "account_number": "108",
-    "chain_id": "cosmoshub-3",
-    "fee": {
-        "amount": [
-            {
-                "amount": "600",
-                "denom": "uatom"
-            }
-        ],
-        "gas": "200000"
-    },
-    "memo": "",
-    "msgs": [
-        {
-            "type": "cosmos-sdk/MsgWithdrawDelegationReward",
-            "value": {
-                "delegator_address": "cosmos19umvgcvk8cxsvzemy239nj9ngc2ltukantgyp3",
-                "validator_address": "cosmosvaloper1648ynlpdw7fqa2axt0w2yp3fk542junl7rsvq6"
-            }
-        },
-        {
-            "type": "cosmos-sdk/MsgDelegate",
-            "value": {
-                "amount": {
-                    "amount": "20139397",
-                    "denom": "uatom"
-                },
-                "delegator_address": "cosmos19umvgcvk8cxsvzemy239nj9ngc2ltukantgyp3",
-                "validator_address": "cosmosvaloper1648ynlpdw7fqa2axt0w2yp3fk542junl7rsvq6",
-            }
-        }
-    ],
-    "sequence": "106"
-};
+const example_tx_str = {"fee":{"amount":[],"gas":"2000000"},"memo":"TestMemo","msg":[{"type":"thorchain/MsgSend","value":{"amount":[{"amount":"1020000000","denom":"rune"}],"from_address":"tthor1c648xgpter9xffhmcqvs7lzd7hxh0prgv5t5gp","to_address":"tthor10xgrknu44d83qr4s4uw56cqxg0hsev5e68lc9z"}}]}; //,"signatures":[]
 
 async function beforeStart() {
     process.on("SIGINT", () => {
@@ -66,8 +32,7 @@ async function debugScenario(sim, app) {
     let tx = JSON.stringify(example_tx_str);
 
 //    await Zemu.default.sleep(120000);
-
-    const addr = await app.getAddressAndPubKey(path, "cosmos");
+    const addr = await app.getAddressAndPubKey(path, "tthor");
     console.log(addr)
 
     console.log(tx);
