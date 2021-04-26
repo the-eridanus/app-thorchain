@@ -1,0 +1,22 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "gdb",
+            "request": "attach",
+            "name": "Attach to gdbserver",
+            "executable": "app/bin/app.elf",
+            "target": "127.0.0.1:1234",
+            "remote": true,
+            "cwd": "${workspaceRoot}", 
+            "gdbpath": "/home/user/ledger/gcc-arm-none-eabi-10-2020-q4-major/bin/arm-none-eabi-gdb",
+            "autorun": [
+                "set substitute-path /project/app ${workspaceRoot}/app",
+                "set substitute-path /project/deps ${workspaceRoot}/deps"
+            ]
+        }
+    ]
+}
