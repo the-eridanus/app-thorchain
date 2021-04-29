@@ -25,9 +25,12 @@ extern "C" {
 #endif
 
 typedef enum {
-    root_item_fee = 0,
+    root_item_account_number = 0,
+    root_item_chain_id,
+    root_item_fee,
     root_item_memo,
-    root_item_msg,
+    root_item_msgs,
+    root_item_sequence, 
 } root_item_e;
 
 bool tx_is_expert_mode();

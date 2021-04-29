@@ -50,7 +50,7 @@ typedef enum {
 #define COIN_DEFAULT_CHAINID                "thorchain"
 
 // In non-expert mode, the app will convert from tor to RUNE
-#define COIN_DEFAULT_DENOM_BASE             "rune"  //Note: This is actually called 'tor' but in messages as 'rune'
+#define COIN_DEFAULT_DENOM_BASE             "tor"
 #define COIN_DEFAULT_DENOM_REPR             "RUNE"
 #define COIN_DEFAULT_DENOM_FACTOR           8
 

@@ -77,82 +77,53 @@ __Z_INLINE bool_t parser_areEqual(uint16_t tokenidx, char *expected) {
     return bool_true;
 }
 
+// This should always query for the direct JSMN_STRING type
+// and THORChain always sends in long format, eg "100000000" for "1.0 RUNE"
 __Z_INLINE bool_t parser_isAmount(char *key) {
-    if (strcmp(key, "fee/amount") == 0)
+    if (strcmp(key, "fee/gas") == 0)
         return bool_true;
 
-    if (strcmp(key, "msg/value/coins") == 0)
+    if (strcmp(key, "msgs/value/coins/amount") == 0)
+        return bool_true;
+
+    if (strcmp(key, "msgs/value/amount/amount") == 0)
         return bool_true;
 
     return bool_false;
 }
 
-__Z_INLINE bool_t is_default_denom_base(const char *denom, uint8_t denom_len) {
-    if (tx_is_expert_mode()){
-        return false;
-    }
-
-    return true;  // Always in tor
-}
-
 __Z_INLINE parser_error_t parser_formatAmount(uint16_t amountToken,
                                               char *outVal, uint16_t outValLen,
                                               uint8_t pageIdx, uint8_t *pageCount) {
+    
+    if (parser_tx_obj.json.tokens[amountToken].type != JSMN_STRING) {
+        return parser_unexpected_type;
+    }
+
     *pageCount = 0;
-    if (parser_tx_obj.json.tokens[amountToken].type == JSMN_ARRAY) {
-        amountToken++;
-    }
-
-    uint16_t numElements;
-
-    CHECK_PARSER_ERR(array_get_element_count(&parser_tx_obj.json, amountToken, &numElements));
-
-    if (numElements == 0) {
-        *pageCount = 1;
-        snprintf(outVal, outValLen, "Empty");
-        return parser_ok;
-    }
-
-    if (numElements != 4)
-        return parser_unexpected_field;
-
-    if (parser_tx_obj.json.tokens[amountToken].type != JSMN_OBJECT)
-        return parser_unexpected_field;
-
-    if (!parser_areEqual(amountToken + 1u, "amount"))
-        return parser_unexpected_field;
-
-    if (!parser_areEqual(amountToken + 3u, "denom"))
-        return parser_unexpected_field;
 
     char bufferUI[160];
     MEMZERO(outVal, outValLen);
     MEMZERO(bufferUI, sizeof(bufferUI));
 
-    const char *amountPtr = parser_tx_obj.tx + parser_tx_obj.json.tokens[amountToken + 2].start;
-    if (parser_tx_obj.json.tokens[amountToken + 2].start < 0) {
+    const char *amountPtr = parser_tx_obj.tx + parser_tx_obj.json.tokens[amountToken].start;
+    if (parser_tx_obj.json.tokens[amountToken].start < 0) {
         return parser_unexpected_buffer_end;
     }
 
-    const int16_t amountLen = parser_tx_obj.json.tokens[amountToken + 2].end -
-                              parser_tx_obj.json.tokens[amountToken + 2].start;
-    const char *denomPtr = parser_tx_obj.tx + parser_tx_obj.json.tokens[amountToken + 4].start;
-    const int16_t denomLen = parser_tx_obj.json.tokens[amountToken + 4].end -
-                             parser_tx_obj.json.tokens[amountToken + 4].start;
+    const int16_t amountLen = parser_tx_obj.json.tokens[amountToken].end -
+                              parser_tx_obj.json.tokens[amountToken].start;
 
     if (amountLen <= 0) {
         return parser_unexpected_buffer_end;
     }
 
-    if (denomLen <= 0) {
+    // "<amountFloat> RUNE"
+    if (sizeof(bufferUI) < (size_t) (amountLen + sizeof(COIN_DEFAULT_DENOM_REPR)) ) {
         return parser_unexpected_buffer_end;
     }
 
-    if (sizeof(bufferUI) < (size_t) (amountLen + denomLen + 2) ) {
-        return parser_unexpected_buffer_end;
-    }
-
-    if (is_default_denom_base(denomPtr, denomLen)) {
+    if (tx_is_expert_mode() == 0) {
         // Then we convert denomination
         char tmp[50];
         if (amountLen < 0 || ((uint16_t) amountLen) >= sizeof(tmp)) {
@@ -165,13 +136,20 @@ __Z_INLINE parser_error_t parser_formatAmount(uint16_t amountToken,
             return parser_unexpected_error;
         }
 
+        // Remove trailing '0' characters, except keep the one after '.'
+        for (uint8_t pos = sizeof(bufferUI)-1; pos>0; pos--) {
+            if (bufferUI[pos] != '\0' && bufferUI[pos] != '0') { break; }
+            if (bufferUI[pos-1] != '.') { bufferUI[pos] = '\0'; } 
+        }
+
         const uint16_t formatted_len =strlen(bufferUI);
         bufferUI[formatted_len] = ' ';
         MEMCPY(bufferUI + 1 + formatted_len, COIN_DEFAULT_DENOM_REPR, strlen(COIN_DEFAULT_DENOM_REPR));
     } else {
+        // Display in tor
         MEMCPY(bufferUI, amountPtr, amountLen);
         bufferUI[amountLen] = ' ';
-        MEMCPY(bufferUI + 1 + amountLen, denomPtr, denomLen);
+        MEMCPY(bufferUI + 1 + amountLen, COIN_DEFAULT_DENOM_BASE, strlen(COIN_DEFAULT_DENOM_BASE));
     }
 
     pageString(outVal, outValLen, bufferUI, pageIdx, pageCount);
