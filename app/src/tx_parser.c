@@ -134,35 +134,14 @@ parser_error_t tx_traverse_find(int16_t root_token_index, uint16_t *ret_value_to
     if (parser_tx_obj.query.max_level <= 0 || parser_tx_obj.query.max_depth <= 0 ||
         token_type == JSMN_STRING ||
         token_type == JSMN_PRIMITIVE) {
-        const bool skipTypeField =
-                parser_tx_obj.flags.cache_valid &&
-                parser_tx_obj.flags.msg_type_grouping &&
-                is_msg_type_field(parser_tx_obj.query.out_key) &&
-                parser_tx_obj.filter_msg_type_valid_idx != parser_tx_obj.query._item_index_current;
-
-        const bool skipFromFieldHidingRule =
-                parser_tx_obj.flags.msg_from_grouping_hide_all ||
-                parser_tx_obj.filter_msg_from_valid_idx != parser_tx_obj.query._item_index_current;
-
-        const bool skipFromField =
-                parser_tx_obj.flags.cache_valid &&
-                parser_tx_obj.flags.msg_from_grouping &&
-                is_msg_from_field(parser_tx_obj.query.out_key) &&
-                skipFromFieldHidingRule;
-
-        const bool skipField = skipFromField || skipTypeField;
 
         CHECK_APP_CANARY()
 
         // Early bail out
-        if (!skipField && parser_tx_obj.query._item_index_current == parser_tx_obj.query.item_index) {
+        if (parser_tx_obj.query._item_index_current == parser_tx_obj.query.item_index) {
             *ret_value_token_index = root_token_index;
             CHECK_APP_CANARY()
             return parser_ok;
-        }
-
-        if (skipField) {
-            parser_tx_obj.query.item_index++;
         }
 
         parser_tx_obj.query._item_index_current++;

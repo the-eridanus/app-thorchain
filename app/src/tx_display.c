@@ -25,18 +25,18 @@
 
 const char *get_required_root_item(root_item_e i) {
     switch (i) {
-        case root_item_chain_id:
-            return "chain_id";
         case root_item_account_number:
             return "account_number";
-        case root_item_sequence:
-            return "sequence";
+        case root_item_chain_id:
+            return "chain_id";
         case root_item_fee:
             return "fee";
         case root_item_memo:
             return "memo";
         case root_item_msgs:
             return "msgs";
+        case root_item_sequence:
+            return "sequence";
         default:
             return "?";
     }
@@ -44,18 +44,18 @@ const char *get_required_root_item(root_item_e i) {
 
 __Z_INLINE uint8_t get_root_max_level(root_item_e i) {
     switch (i) {
-        case root_item_chain_id:
-            return 1;
         case root_item_account_number:
-            return 1;
-        case root_item_sequence:
-            return 1;
+            return 0;
+        case root_item_chain_id:
+            return 0;
         case root_item_fee:
-            return 2;
+            return 0;
         case root_item_memo:
-            return 1;
+            return 0;
         case root_item_msgs:
-            return 3;
+            return 2;
+        case root_item_sequence:
+            return 0;
         default:
             return 0;
     }
@@ -113,16 +113,6 @@ __Z_INLINE parser_error_t calculate_is_default_chainid() {
     return parser_ok;
 }
 
-__Z_INLINE bool address_matches_own(char *addr) {
-    if (parser_tx_obj.own_addr == NULL) {
-        return false;
-    }
-    if (strcmp(parser_tx_obj.own_addr, addr) != 0) {
-        return false;
-    }
-    return true;
-}
-
 parser_error_t tx_indexRootFields() {
     if (parser_tx_obj.flags.cache_valid) {
         return parser_ok;
@@ -134,17 +124,6 @@ parser_error_t tx_indexRootFields() {
     char tmp_val[70];
     MEMZERO(&tmp_key, sizeof(tmp_key));
     MEMZERO(&tmp_val, sizeof(tmp_val));
-
-    // Grouping references
-    char reference_msg_type[40];
-    MEMZERO(&reference_msg_type, sizeof(reference_msg_type));
-    char reference_msg_from[70];
-    MEMZERO(&reference_msg_from, sizeof(reference_msg_from));
-
-    parser_tx_obj.filter_msg_type_count = 0;
-    parser_tx_obj.filter_msg_from_count = 0;
-    parser_tx_obj.flags.msg_type_grouping = 1;
-    parser_tx_obj.flags.msg_from_grouping = 1;
 
     for (root_item_e root_item_idx = 0; root_item_idx < NUM_REQUIRED_ROOT_PAGES; root_item_idx++) {
         uint16_t req_root_item_key_token_idx = 0;
@@ -192,51 +171,10 @@ parser_error_t tx_indexRootFields() {
                     parser_tx_obj.query.out_key_len,
                     0, &pageCount))
 
-            switch (root_item_idx) {
-                case root_item_memo: {  //TODO: Allow Empty Memo?
-                    if (strlen(parser_tx_obj.query.out_val) == 0) {
-                        err = parser_query_no_results;
-                        continue;
-                    }
-                    break;
-                }
-                case root_item_msgs: {
-                    // GROUPING: Message Type
-                    if (parser_tx_obj.flags.msg_type_grouping && is_msg_type_field(tmp_key)) {
-                        // First message, initialize expected type
-                        if (parser_tx_obj.filter_msg_type_count == 0) {
-                            strcpy(reference_msg_type, tmp_val);
-                            parser_tx_obj.filter_msg_type_valid_idx = current_item_idx;
-                        }
-
-                        if (strcmp(reference_msg_type, tmp_val) != 0) {
-                            // different values, so disable grouping
-                            parser_tx_obj.flags.msg_type_grouping = 0;
-                            parser_tx_obj.filter_msg_type_count = 0;
-                        }
-
-                        parser_tx_obj.filter_msg_type_count++;
-                    }
-
-                    // GROUPING: Message From
-                    if (parser_tx_obj.flags.msg_from_grouping && is_msg_from_field(tmp_key)) {
-                        // First message, initialize expected from
-                        if (parser_tx_obj.filter_msg_from_count == 0) {
-                            strcpy(reference_msg_from, tmp_val);
-                            parser_tx_obj.filter_msg_from_valid_idx = current_item_idx;
-                        }
-
-                        if (strcmp(reference_msg_from, tmp_val) != 0) {
-                            // different values, so disable grouping
-                            parser_tx_obj.flags.msg_from_grouping = 0;
-                            parser_tx_obj.filter_msg_from_count = 0;
-                        }
-
-                        parser_tx_obj.filter_msg_from_count++;
-                    }
-                }
-                default:
-                    break;
+            // Empty Memo
+            if (root_item_idx == root_item_memo && strlen(parser_tx_obj.query.out_val) == 0) {
+                err = parser_query_no_results;
+                continue;
             }
 
             display_cache.root_item_number_subitems[root_item_idx]++;
@@ -253,17 +191,6 @@ parser_error_t tx_indexRootFields() {
     parser_tx_obj.flags.cache_valid = 1;
 
     CHECK_PARSER_ERR(calculate_is_default_chainid());
-
-    // turn off grouping if we are not in expert mode
-    if (tx_is_expert_mode()) {
-        parser_tx_obj.flags.msg_from_grouping = 0;
-    }
-
-    // check if from reference value matches the device address that will be signing
-    parser_tx_obj.flags.msg_from_grouping_hide_all = 0;
-    if (address_matches_own(reference_msg_from)){
-        parser_tx_obj.flags.msg_from_grouping_hide_all = 1;
-    }
 
     return parser_ok;
 }
@@ -284,7 +211,7 @@ __Z_INLINE uint8_t get_subitem_count(root_item_e root_item) {
 
     int16_t tmp_num_items = display_cache.root_item_number_subitems[root_item];
 
-    // Correct for expert_mode (show/hide items)
+    // Correct for expert_mode (show/hide some root items)
     switch (root_item) {
         case root_item_account_number:
         case root_item_chain_id:
@@ -294,20 +221,7 @@ __Z_INLINE uint8_t get_subitem_count(root_item_e root_item) {
                 tmp_num_items = 0;
             }
             break;
-        case root_item_msgs:
-            // Remove grouped items from list
-            if (parser_tx_obj.flags.msg_type_grouping == 1u && parser_tx_obj.filter_msg_type_count > 0) {
-                tmp_num_items += 1; // we leave main type
-                tmp_num_items -= parser_tx_obj.filter_msg_type_count;
-            }
-            if (parser_tx_obj.flags.msg_from_grouping == 1u && parser_tx_obj.filter_msg_from_count > 0) {
-                if (!parser_tx_obj.flags.msg_from_grouping_hide_all) {
-                    tmp_num_items += 1; // we leave main from
-                }
-                tmp_num_items -= parser_tx_obj.filter_msg_from_count;
-            }
-            break;
-        default:  //Always show fee/gas and root level memo.
+        default:
             break;
     }
 
@@ -408,22 +322,22 @@ parser_error_t tx_display_query(uint16_t displayIdx,
 
 static const key_subst_t key_substitutions[] = {
         // Common
-        {"chain_id",                          "Chain ID"},
         {"account_number",                    "Account"},
+        {"chain_id",                          "Chain ID"},
+        {"fee",                               "Fee"},
         {"sequence",                          "Sequence"},
         {"memo",                              "Memo"},
-        {"fee/gas",                           "Fee"},
         {"msgs/type",                         "Type"},
 
         // MsgSend
         {"msgs/value/from_address",           "From"},
         {"msgs/value/to_address",             "To"},
-        {"msgs/value/amount/amount",          "Amount"},
+        {"msgs/value/amount",                 "Amount"},
 
         // MsgDeposit
         {"msgs/value/signer",                  "Sender"},
         {"msgs/value/memo",                    "Memo"},
-        {"msgs/value/coins/amount",            "Amount"},
+        {"msgs/value/coins",                   "Amount"},
 };
 
 parser_error_t tx_display_make_friendly() {

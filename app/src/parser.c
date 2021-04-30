@@ -53,40 +53,16 @@ parser_error_t parser_getNumItems(const parser_context_t *ctx, uint8_t *num_item
     return tx_display_numItems(num_items);
 }
 
-__Z_INLINE bool_t parser_areEqual(uint16_t tokenidx, char *expected) {
-    if (parser_tx_obj.json.tokens[tokenidx].type != JSMN_STRING) {
-        return bool_false;
-    }
-
-    int16_t len = parser_tx_obj.json.tokens[tokenidx].end - parser_tx_obj.json.tokens[tokenidx].start;
-    if (len < 0) {
-        return bool_false;
-    }
-
-    if (strlen(expected) != (size_t) len) {
-        return bool_false;
-    }
-
-    const char *p = parser_tx_obj.tx + parser_tx_obj.json.tokens[tokenidx].start;
-    for (uint16_t i = 0; i < len; i++) {
-        if (expected[i] != *(p + i)) {
-            return bool_false;
-        }
-    }
-
-    return bool_true;
-}
-
 // This should always query for the direct JSMN_STRING type
 // and THORChain always sends in long format, eg "100000000" for "1.0 RUNE"
 __Z_INLINE bool_t parser_isAmount(char *key) {
-    if (strcmp(key, "fee/gas") == 0)
+    if (strcmp(key, "fee") == 0)
         return bool_true;
 
-    if (strcmp(key, "msgs/value/coins/amount") == 0)
+    if (strcmp(key, "msgs/value/coins") == 0)
         return bool_true;
 
-    if (strcmp(key, "msgs/value/amount/amount") == 0)
+    if (strcmp(key, "msgs/value/amount") == 0)
         return bool_true;
 
     return bool_false;
@@ -96,11 +72,37 @@ __Z_INLINE parser_error_t parser_formatAmount(uint16_t amountToken,
                                               char *outVal, uint16_t outValLen,
                                               uint8_t pageIdx, uint8_t *pageCount) {
     
-    if (parser_tx_obj.json.tokens[amountToken].type != JSMN_STRING) {
-        return parser_unexpected_type;
+    if (parser_tx_obj.json.tokens[amountToken].type == JSMN_ARRAY) {
+        amountToken++;  //get first element of array
     }
 
     *pageCount = 0;
+
+    uint16_t numElements;
+    CHECK_PARSER_ERR(array_get_element_count(&parser_tx_obj.json, amountToken, &numElements));
+
+    if (numElements == 0) {
+        *pageCount = 1;
+        snprintf(outVal, outValLen, "Empty");
+        return parser_ok;
+    }
+
+    if (numElements != 4)
+        return parser_unexpected_field;
+
+    if (parser_tx_obj.json.tokens[amountToken].type != JSMN_OBJECT)
+        return parser_unexpected_field;
+
+    // Point at the correct JSMN_STRING. There are two variations:
+    // {"amount": "2000","asset": "THOR.RUNE"} where we want "2000" (+2)
+    // {"amount":[],"gas":"1000"} where key we're interested in "1000" (+4)
+    amountToken += 2;
+    if (parser_tx_obj.json.tokens[amountToken].type == JSMN_ARRAY)
+        amountToken += 2;
+
+    // Should now be a String, e.g. "2000" ready to format
+    if (parser_tx_obj.json.tokens[amountToken].type != JSMN_STRING)
+        return parser_unexpected_field;
 
     char bufferUI[160];
     MEMZERO(outVal, outValLen);
