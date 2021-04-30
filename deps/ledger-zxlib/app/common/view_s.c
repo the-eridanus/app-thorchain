@@ -310,7 +310,7 @@ void view_review_show() {
 
 void h_expert_toggle() {
     app_mode_set_expert(!app_mode_expert());
-    view_idle_show(1);
+    view_idle_show(2);
 }
 
 void h_expert_update() {
