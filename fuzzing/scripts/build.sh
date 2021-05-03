@@ -23,6 +23,6 @@ rm -rf "$BUILDDIR"
 mkdir -p "$BUILDDIR/syncdir"
 cd "$BUILDDIR" || exit
 
-cmake  -DCMAKE_CXX_COMPILER=afl-clang-fast++ -DCMAKE_C_COMPILER=afl-clang-fast  ..
+cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER=afl-clang-fast++ -DCMAKE_C_COMPILER=afl-clang-fast  ..
 make clean
 make fuzzing_stub
