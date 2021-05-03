@@ -17,10 +17,6 @@ Please:
 - **Do not use a Ledger device with funds for development purposes.**
 - **Have a separate and marked device that is used ONLY for development and testing**
 
-Tip:
-
-- In releases, you will find a precompiled test app. If you are just curious, you can run `zxtool.sh` and avoid building.
-
 ## Download and install a prerelease
 
 *Once the app is approved by Ledger, it will be available in their app store (Ledger Live).
@@ -162,7 +158,7 @@ There are a few things to take into account when enabling Ledger App debugging:
     make zemu_debug
     ```
 
-    The emulator will launch and immediately stop. You should see a black window
+    The emulator will launch and immediately stop. You should see a blank window
 
 4. Configure Clion debugger
 
