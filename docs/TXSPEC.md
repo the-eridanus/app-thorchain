@@ -10,7 +10,7 @@ Transactions passed to the Ledger device will be in the following format. The Le
   "account_number": {number},
   "chain_id": {string},
   "fee": {
-    "amount": [{"amount": {number}, "denom": {string}}, ...],
+    "amount": [],
     "gas": {number}
   },
   "memo": {string},
@@ -19,21 +19,72 @@ Transactions passed to the Ledger device will be in the following format. The Le
 }
 ```
 
-`msgs` is a list of messages, which are arbitrary JSON structures.
+`msgs` is a list of messages, which are arbitrary JSON structures. Ledger app currently supports `MsgDeposit` & `MsgSend` (examples below). 
+**Note:** All amount & gas values must be in base integer unit 1e8. E.g. "1.0" RUNE is invalid. The amount must be "100000000".
 
 #### Examples
 
 ```json
+{
+  "account_number": "588",
+  "chain_id": "thorchain",
+  "fee": {
+    "amount": [],
+    "gas": "2000000"
+  },
+  "memo": "TestMemo",
+  "msgs": [
+    {
+      "type": "thorchain/MsgSend",
+      "value": {
+        "amount": [
+          {
+            "amount": "150000000",
+            "denom": "rune"
+          }
+        ],
+        "from_address": "tthor1c648xgpter9xffhmcqvs7lzd7hxh0prgv5t5gp",
+        "to_address": "tthor10xgrknu44d83qr4s4uw56cqxg0hsev5e68lc9z"
+      }
+    }
+  ],
+  "sequence": "5"
+}
 ```
 
 ```json
+{
+  "account_number": "588",
+  "chain_id": "thorchain",
+  "fee": {
+    "amount": [],
+    "gas": "10000000"
+  },
+  "memo": "",
+  "msgs": [
+    {
+      "type": "thorchain/MsgDeposit",
+      "value": {
+        "coins": [
+          {
+            "amount": "330000000",
+            "asset": "THOR.RUNE"
+          }
+        ],
+        "memo": "SWAP:BNB.BNB:tbnb1qk2m905ypazwfau9cn0qnr4c4yxz63v9u9md20:",
+        "signer": "tthor1c648xgpter9xffhmcqvs7lzd7hxh0prgv5t5gp"
+      }
+    }
+  ],
+  "sequence": "6"
+}
 ```
 
 #### Display Logic
 
 The Ledger device SHOULD pick a suitable display representation for the transaction.
 
-The key type (secp256k1 / ed25519), `chain_id`, `account_number`, `sequence`, `fee`, and `memo` should be displayed in that order, each on their own page, autoscrolling if necessary.
+The key type (secp256k1 / ed25519), `account_number`, `chain_id`, `fee` , `memo`, and `sequence`, should be displayed in that order, each on their own page, autoscrolling if necessary. Some fields may be clipped when not in advanced mode.
 
 `msgs` should be iterated through and each displayed according to the following recursive logic:
 
