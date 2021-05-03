@@ -44,19 +44,16 @@ uint8_t flow_inside_loop;
 
 
 UX_FLOW_DEF_NOCB(ux_idle_flow_1_step, pbb, { &C_icon_app, MENU_MAIN_APP_LINE1, MENU_MAIN_APP_LINE2,});
-UX_STEP_CB_INIT(ux_idle_flow_2_step, bn,  h_expert_update(), h_expert_toggle(), { "Expert mode:", viewdata.value, });
-UX_FLOW_DEF_NOCB(ux_idle_flow_3_step, bn, { APPVERSION_LINE1, APPVERSION_LINE2, });
-UX_FLOW_DEF_NOCB(ux_idle_flow_4_step, bn, { "Developed by:", "Zondax.ch", });
-UX_FLOW_DEF_NOCB(ux_idle_flow_5_step, bn, { "License:", "Apache 2.0", });
-UX_FLOW_DEF_VALID(ux_idle_flow_6_step, pb, os_sched_exit(-1), { &C_icon_dashboard, "Quit",});
+UX_FLOW_DEF_NOCB(ux_idle_flow_2_step, bn, { APPVERSION_LINE1, APPVERSION_LINE2, });
+UX_STEP_CB_INIT(ux_idle_flow_3_step, bn,  h_expert_update(), h_expert_toggle(), { "Expert mode:", viewdata.value, });
+// UX_FLOW_DEF_NOCB(ux_idle_flow_4_step, bn, { "License:", "Apache 2.0", });
+UX_FLOW_DEF_VALID(ux_idle_flow_4_step, pb, os_sched_exit(-1), { &C_icon_dashboard, "Quit",});
 
 const ux_flow_step_t *const ux_idle_flow [] = {
   &ux_idle_flow_1_step,
   &ux_idle_flow_2_step,
   &ux_idle_flow_3_step,
   &ux_idle_flow_4_step,
-  &ux_idle_flow_5_step,
-  &ux_idle_flow_6_step,
   FLOW_END_STEP,
 };
 
@@ -203,7 +200,7 @@ void splitValueField() {
 
 void h_expert_toggle() {
     app_mode_set_expert(!app_mode_expert());
-    ux_flow_init(0, ux_idle_flow, &ux_idle_flow_2_step);
+    ux_flow_init(0, ux_idle_flow, &ux_idle_flow_3_step);
 }
 
 void h_expert_update() {
