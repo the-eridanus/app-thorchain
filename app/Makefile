@@ -34,7 +34,7 @@ APPPATH = "44'/931'"
 APP_LOAD_PARAMS = --appFlags 0x200 --delete $(COMMON_LOAD_PARAMS) --path $(APPPATH)
 
 ifeq ($(TARGET_NAME),TARGET_NANOS)
-SCRIPT_LD:=$(CURDIR)/script.ld
+APP_STACK_SIZE:=1212
 ICONNAME:=$(CURDIR)/nanos_icon.gif
 endif
 
@@ -143,6 +143,8 @@ LDFLAGS  += -O3 -Os
 LDLIBS   += -lm -lgcc -lc
 
 ##########################
+GLYPH_SRC_DIR = glyphs
+INCLUDES_PATH += $(MY_DIR)/glyphs
 include $(BOLOS_SDK)/Makefile.glyphs
 
 APP_SOURCE_PATH += $(MY_DIR)/src
@@ -172,4 +174,4 @@ delete:
 	python -m ledgerblue.deleteApp $(COMMON_DELETE_PARAMS)
 
 listvariants:
-	@echo VARIANTS COIN cosmos
+	@echo VARIANTS COIN RUNE

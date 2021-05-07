@@ -168,7 +168,7 @@ parser_error_t tx_indexRootFields() {
             CHECK_PARSER_ERR(tx_getToken(
                     ret_value_token_index,
                     parser_tx_obj.query.out_val,
-                    parser_tx_obj.query.out_key_len,
+                    parser_tx_obj.query.out_val_len,
                     0, &pageCount))
 
             // Empty Memo
