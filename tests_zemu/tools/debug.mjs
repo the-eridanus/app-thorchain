@@ -9,7 +9,7 @@ const SIM_OPTIONS = {
     logging: true,
     start_delay: 4000,
     X11: true,
-    custom: `-s "${seed}" --color LAGOON_BLUE`
+    custom: `-s "${seed}" --color LAGOON_BLUE --sdk 2.0`
 };
 
 // MsgSend
