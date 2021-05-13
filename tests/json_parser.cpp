@@ -365,7 +365,7 @@ namespace {
 
     TEST(TxValidationTest, ObjectGetValueCorrectFormat) {
         auto transaction =
-                R"({"account_number":"0","chain_id":"test-chain-1","fee":{"amount":[{"amount":"5","denom":"photon"}],"gas":"10000"},"memo":"testmemo","msgs":[{"inputs":[{"address":"cosmosaccaddr1d9h8qat5e4ehc5","coins":[{"amount":"10","denom":"atom"}]}],"outputs":[{"address":"cosmosaccaddr1da6hgur4wse3jx32","coins":[{"amount":"10","denom":"atom"}]}]}],"sequence":"1"})";
+                R"({"account_number":"588","chain_id":"thorchain","fee":{"amount":[],"gas":"2000000"},"memo":"TestMemo","msgs":[{"type":"thorchain/MsgSend","value":{"amount":[{"amount":"150000000","denom":"rune"}],"from_address":"tthor1c648xgpter9xffhmcqvs7lzd7hxh0prgv5t5gp","to_address":"tthor10xgrknu44d83qr4s4uw56cqxg0hsev5e68lc9z","test":"test"}}],"sequence":"5"})";
         parsed_json_t parsed_json;
         JSON_PARSE(&parsed_json, transaction);
 
@@ -383,9 +383,9 @@ namespace {
         EXPECT_EQ(token_index, 6) << "Wrong token index";
 
         EXPECT_EQ(object_get_value(&parsed_json, 0, "msgs", &token_index), parser_ok);
-        EXPECT_EQ(token_index, 19) << "Wrong token index";
+        EXPECT_EQ(token_index, 14) << "Wrong token index";
 
         EXPECT_EQ(object_get_value(&parsed_json, 0, "sequence", &token_index), parser_ok);
-        EXPECT_EQ(token_index, 46) << "Wrong token index";
+        EXPECT_EQ(token_index, 34) << "Wrong token index";
     }
 }
