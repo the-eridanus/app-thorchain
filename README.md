@@ -37,6 +37,12 @@ Please:
   libssl-dev libgmp-dev autoconf libtool
    ```
 
+- Install Docker.
+    ```bash
+    docker pull zondax/builder-bolos:latest
+    docker pull zondax/builder-zemu:latest
+    ```
+
 - Setup Ledger development environment using official docs:
     [https://ledger.readthedocs.io/en/latest/userspace/setup.html](https://ledger.readthedocs.io/en/latest/userspace/setup.html)
 
@@ -55,7 +61,7 @@ If you see conan is not found, check that you installed the package in the same 
 > We like clion or vscode but let's have some reproducible command line steps
 >
 
-- Building the app itself
+- Building the app itself (Manual)
 
     If you installed the what is described above, just run:
     ```bash
@@ -63,6 +69,14 @@ If you see conan is not found, check that you installed the package in the same 
     export PATH=/path/to/gcc-arm-none-eabi/bin:$PATH
     export BOLOS_SDK=/path/to/ledger-thorchain/deps/nanos-secure-sdk
     make
+    make load
+    ```
+
+- Building with zondax docker images
+    ```bash
+    export BOLOS_SDK=
+    make
+    make load
     ```
 
 ## How to test with Zemu?
@@ -79,6 +93,8 @@ Let's go! First install everything:
 
 ```bash
 make zemu_install
+make
+make zemu
 ```
 
 Then you can run JS tests:
@@ -93,7 +109,7 @@ To run a single specific test:
 
 ## How to debug a ledger app?
 
-You can use vscode or clion to debug the app. We recommend using CLion but we provide a vscode (unsupported) configuration too.
+You can use vscode or clion to debug the app.
 
 ### Preconditions
 
@@ -154,6 +170,9 @@ There are a few things to take into account when enabling Ledger App debugging:
     Add breakpoints in other places and continue.
 
     Enjoy :)
+
+6. For VSCode, open `.vscode/launch.json` and change `gdbpath` to be correct for your `arm-none-eabi-gdb`
+    Whilst your `make zemu_debug` is running, press VSCode attach to gdbserver. Enjoy :)
 
 ## Using a real device
 
