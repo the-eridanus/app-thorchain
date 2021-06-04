@@ -1,6 +1,6 @@
 # Ledger THORChain app
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-[![CodeFactor](https://www.codefactor.io/repository/github/HildisviniOttar/ledger-thorchain/badge)](https://www.codefactor.io/repository/github/HildisviniOttar/ledger-thorchain)
+[![CodeFactor](https://www.codefactor.io/repository/github/thorchain/ledger-thorchain/badge)](https://www.codefactor.io/repository/github/thorchain/ledger-thorchain)
 
 This project contains the THORChain app for Ledger Nano S and X.
 
@@ -25,14 +25,11 @@ Please:
 
 ## Preconditions
 
-- Be sure you checkout submodules too:
+- Be sure you checkout submodules:
 
     ```
     git submodule update --init --recursive
     ```
-
-- Install Docker CE
-    - Instructions can be found here: https://docs.docker.com/install/
 
 - We only officially support Ubuntu. Install the following packages:
    ```
@@ -40,13 +37,15 @@ Please:
   libssl-dev libgmp-dev autoconf libtool
    ```
 
-- Install `node > v13.0`. We typically recommend using `n`
+- Setup Ledger development environment using official docs:
+    [https://ledger.readthedocs.io/en/latest/userspace/setup.html](https://ledger.readthedocs.io/en/latest/userspace/setup.html)
+
 
 - You will need python 3 and then run
     - `make deps`
 
-- This project requires Ledger firmware 1.6
-    - The current repository keeps track of Ledger's SDK but it is possible to override it by changing the git submodule.
+- This project requires Ledger firmware 2.0
+    - The current repository keeps track of Ledger's SDK in `deps/` but it is possible to override it by changing the git submodule.
 
 *Warning*: Some IDEs may not use the same python interpreter or virtual enviroment as the one you used when running `pip`.
 If you see conan is not found, check that you installed the package in the same interpreter as the one that launches `cmake`.
@@ -60,35 +59,16 @@ If you see conan is not found, check that you installed the package in the same 
 
     If you installed the what is described above, just run:
     ```bash
+    cd ledger-thorchain
+    export PATH=/path/to/gcc-arm-none-eabi/bin:$PATH
+    export BOLOS_SDK=/path/to/ledger-thorchain/deps/nanos-secure-sdk
     make
-    ```
-
-## Running tests
-
-- Running rust tests (x64)
-
-    If you installed the what is described above, just run:
-    ```bash
-    make rust_test
-    ```
-
-- Running C/C++ tests (x64)
-
-    If you installed the what is described above, just run:
-    ```bash
-    make cpp_test
-    ```
-
-- Running device emulation+integration tests!!
-
-   ```bash
-    Use Zemu! Explained below!
     ```
 
 ## How to test with Zemu?
 
-> What is Zemu?? Great you asked!!
-> As part of this project, we are making public a beta version of our internal testing+emulation framework for Ledger apps.
+> What is Zemu??
+> As part of the Cosmos project this forked from, Zondax made public a beta version of their internal testing+emulation framework for Ledger apps.
 >
 > Npm Package here: https://www.npmjs.com/package/@zondax/zemu
 >
