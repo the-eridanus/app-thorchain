@@ -33,6 +33,10 @@ APPVERSION_P=0
 APPPATH = "44'/931'"
 APP_LOAD_PARAMS = --appFlags 0x200 --delete $(COMMON_LOAD_PARAMS) --path $(APPPATH)
 
+# Ledger: add the "Pending security review" disclaimer
+APP_LOAD_PARAMS += --tlvraw 9F:01
+DEFINES += HAVE_PENDING_REVIEW_SCREEN
+
 ifeq ($(TARGET_NAME),TARGET_NANOS)
 APP_STACK_SIZE:=1212
 ICONNAME:=$(CURDIR)/nanos_icon.gif
