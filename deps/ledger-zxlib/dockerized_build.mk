@@ -14,7 +14,7 @@
 #*  limitations under the License.
 #********************************************************************************
 
-.PHONY: all deps build clean load delete check_python show_info_recovery_mode
+.PHONY: all deps build buildX buildS2 clean load delete check_python show_info_recovery_mode
 
 TESTS_ZEMU_DIR?=$(CURDIR)/tests_zemu
 TESTS_ZEMU_JS_PACKAGE?=
@@ -24,8 +24,9 @@ LEDGER_SRC=$(CURDIR)/app
 DOCKER_APP_SRC=/project
 DOCKER_APP_BIN=$(DOCKER_APP_SRC)/app/bin/app.elf
 
-DOCKER_BOLOS_SDK=/project/deps/nanos-secure-sdk
+DOCKER_BOLOS_SDKS=/project/deps/nanos-secure-sdk
 DOCKER_BOLOS_SDKX=/project/deps/nanox-secure-sdk
+DOCKER_BOLOS_SDKS2=/project/deps/nanosplus-secure-sdk
 
 SCP_PUBKEY=049bc79d139c70c83a4b19e8922e5ee3e0080bb14a2e8b0752aa42cda90a1463f689b0fa68c1c0246845c2074787b649d0d8a6c0b97d4607065eee3057bdf16b83
 SCP_PRIVKEY=ff701d781f43ce106f72dc26a46b6a83e053b5d07bb3d4ceab79c91ca822a66b
@@ -63,7 +64,14 @@ define run_docker
 	"COIN=$(COIN) $(2)"
 endef
 
-all: build
+all: 
+	@$(MAKE) clean_output
+	@$(MAKE) clean_build
+	@$(MAKE) buildS
+	@$(MAKE) clean_build
+	@$(MAKE) buildX
+	@$(MAKE) clean_build
+	@$(MAKE) buildS2
 
 .PHONY: check_python
 check_python:
@@ -78,34 +86,64 @@ deps: check_python
 pull:
 	docker pull $(DOCKER_IMAGE)
 
-.PHONY: build_rust
-build_rust:
-	$(call run_docker,$(DOCKER_BOLOS_SDK),make -C $(DOCKER_APP_SRC) rust)
+.PHONY: build_rustS
+build_rustS:
+	$(call run_docker,$(DOCKER_BOLOS_SDKS),make -C $(DOCKER_APP_SRC) rust)
 
-.PHONY: build
-build: build_rust
+.PHONY: build_rustX
+build_rustX:
+	$(call run_docker,$(DOCKER_BOLOS_SDKX),make -C $(DOCKER_APP_SRC) rust)
+
+.PHONY: build_rustS2
+build_rustS2:
+	$(call run_docker,$(DOCKER_BOLOS_SDKS2),make -C $(DOCKER_APP_SRC) rust)
+
+.PHONY: buildS
+buildS: build_rustS
 	$(info Replacing app icon)
 	@cp $(LEDGER_SRC)/nanos_icon.gif $(LEDGER_SRC)/glyphs/icon_app.gif
 	$(info calling make inside docker)
-	$(call run_docker,$(DOCKER_BOLOS_SDK),make -j `nproc` -C $(DOCKER_APP_SRC))
+	$(call run_docker,$(DOCKER_BOLOS_SDKS),make -j `nproc` -C $(DOCKER_APP_SRC))
 
 .PHONY: buildX
-buildX: build_rust
+buildX: build_rustX
 	@cp $(LEDGER_SRC)/nanos_icon.gif $(LEDGER_SRC)/glyphs/icon_app.gif
 	@convert $(LEDGER_SRC)/nanos_icon.gif -crop 14x14+1+1 +repage -negate $(LEDGER_SRC)/nanox_icon.gif
 	$(call run_docker,$(DOCKER_BOLOS_SDKX),make -j `nproc` -C $(DOCKER_APP_SRC))
 
+.PHONY: buildS2
+buildS2: build_rustS2
+	@cp $(LEDGER_SRC)/nanos_icon.gif $(LEDGER_SRC)/glyphs/icon_app.gif
+	@convert $(LEDGER_SRC)/nanos_icon.gif -crop 14x14+1+1 +repage -negate $(LEDGER_SRC)/nanox_icon.gif
+	$(call run_docker,$(DOCKER_BOLOS_SDKS2),make -j $(NPROC) -C $(DOCKER_APP_SRC))
+
+.PHONY: clean_output
+clean_output:
+	@echo "Removing output files"
+	@rm -f app/output/app* || true
+
+.PHONY: clean_build
+clean_build:
+	$(call run_docker,$(DOCKER_BOLOS_SDKS),make -C $(DOCKER_APP_SRC) clean)
+
 .PHONY: clean
-clean:
-	$(call run_docker,$(DOCKER_BOLOS_SDK),make -C $(DOCKER_APP_SRC) clean)
+clean: clean_output clean_build
 
 .PHONY: listvariants
 listvariants:
-	$(call run_docker,$(DOCKER_BOLOS_SDK),make -C $(DOCKER_APP_SRC) listvariants)
+	$(call run_docker,$(DOCKER_BOLOS_SDKS),make -C $(DOCKER_APP_SRC) listvariants)
 
-.PHONY: shell
-shell:
-	$(call run_docker,$(DOCKER_BOLOS_SDK) -t,bash)
+.PHONY: shellS
+shellS:
+	$(call run_docker,$(DOCKER_BOLOS_SDKS) -t,bash)
+
+.PHONY: shellX
+shellS:
+	$(call run_docker,$(DOCKER_BOLOS_SDKX) -t,bash)
+
+.PHONY: shellS2
+shellS:
+	$(call run_docker,$(DOCKER_BOLOS_SDKS2) -t,bash)
 
 .PHONY: load
 load:

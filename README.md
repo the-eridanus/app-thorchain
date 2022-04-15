@@ -45,6 +45,23 @@ User instructions in [docs/INSTRUCTIONS.md](docs/INSTRUCTIONS.md)
     docker pull zondax/builder-zemu:latest
     ```
 
+- Ledger builder (required for deployment)
+    ```bash
+    git clone https://github.com/LedgerHQ/ledger-app-builder
+    cd ledger-app-builder
+    sudo docker build -t ledger-app-builder:latest .
+    ```
+    [https://github.com/LedgerHQ/ledger-app-builder#compile-your-app-in-the-container](https://github.com/LedgerHQ/ledger-app-builder#compile-your-app-in-the-container)
+    ```bash
+    cd /path/to/app-thorchain
+    sudo docker run --rm -ti -v "$(realpath .):/app" ledger-app-builder:latest
+    /app# make    <-- nanoS
+    /app# make clean
+    /app# BOLOS_SDK=$NANOX_SDK make   <-- nanoX
+    /app# make clean
+    /app# BOLOS_SDK=$NANOSP_SDK make  <-- nanoS+
+    ```
+
 - (Optional: Manual builds) - Setup Ledger development environment using official docs:
     [https://ledger.readthedocs.io/en/latest/userspace/setup.html](https://ledger.readthedocs.io/en/latest/userspace/setup.html)
 

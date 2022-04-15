@@ -15,7 +15,6 @@
 ********************************************************************************/
 
 #include <stdio.h>
-#include <ctype.h>
 #include <zxmacros.h>
 #include <tx_validate.h>
 #include <zxtypes.h>
@@ -166,7 +165,8 @@ __Z_INLINE parser_error_t parser_formatAmount(uint16_t amountToken,
     char *s = bufferUI;
     size_t count = 0;
     while (*s && count < sizeof(bufferUI)) {
-        *s = toupper((unsigned char) *s);
+        if(('a' <= *s) && (*s <= 'z'))
+            *s = 'A' + (*s - 'a'); //uppercase
         s++;
         count++;
     }
