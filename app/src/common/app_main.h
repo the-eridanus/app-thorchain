@@ -18,7 +18,9 @@
 
 #include <stdbool.h>
 #include <ux.h>
+#include <os.h>
 #include "apdu_codes.h"
+#include "zxmacros.h"
 
 #define OFFSET_CLA                      0
 #define OFFSET_INS                      1  //< Instruction offset

@@ -27,19 +27,28 @@ include $(BOLOS_SDK)/Makefile.defines
 # Main app configuration
 APPNAME = "THORChain"
 APPVERSION_M=2
-APPVERSION_N=0
-APPVERSION_P=2
+APPVERSION_N=1
+APPVERSION_P=0
 
 APPPATH = "44'/931'"
-APP_LOAD_PARAMS = --appFlags 0x200 --delete $(COMMON_LOAD_PARAMS) --path $(APPPATH)
+APP_LOAD_PARAMS = --delete $(COMMON_LOAD_PARAMS) --path $(APPPATH)
 
 ifeq ($(TARGET_NAME),TARGET_NANOS)
+APP_LOAD_PARAMS += --appFlags 0x000
 APP_STACK_SIZE:=1212
 ICONNAME:=$(CURDIR)/nanos_icon.gif
 endif
 
 ifeq ($(TARGET_NAME),TARGET_NANOX)
+APP_LOAD_PARAMS += --appFlags 0x200
 ICONNAME:=$(CURDIR)/nanox_icon.gif
+endif
+
+ifeq ($(TARGET_NAME),TARGET_NANOS2)
+APP_LOAD_PARAMS += --appFlags 0x000
+ICONNAME:=$(CURDIR)/nanox_icon.gif
+OUTPUT_ELF ?= $(CURDIR)/output/app_s2.elf
+OUTPUT_INSTALLER:= $(CURDIR)/pkg/installer_s2.sh
 endif
 
 ifndef ICONNAME
@@ -79,8 +88,14 @@ DEFINES       += HAVE_BOLOS_APP_STACK_CANARY
 DEFINES       += NDEBUG
 
 DEFINES       += HAVE_WEBUSB WEBUSB_URL_SIZE_B=0 WEBUSB_URL=""
+DEFINES		  += HAVE_HASH HAVE_BLAKE2 HAVE_SHA256 HAVE_SHA512
 
-ifeq ($(TARGET_NAME),TARGET_NANOX)
+ifeq ($(TARGET_NAME),TARGET_NANOS)
+# Assume Nano S
+DEFINES       += IO_SEPROXYHAL_BUFFER_SIZE_B=128
+DEFINES       += COMPLIANCE_UX_160 HAVE_UX_LEGACY HAVE_UX_FLOW #??
+else
+# Assume Nano X/S+
 DEFINES       += IO_SEPROXYHAL_BUFFER_SIZE_B=300
 
 DEFINES       += HAVE_GLO096
@@ -91,18 +106,15 @@ DEFINES       += HAVE_BAGL_FONT_OPEN_SANS_EXTRABOLD_11PX
 DEFINES       += HAVE_BAGL_FONT_OPEN_SANS_LIGHT_16PX
 
 DEFINES       += HAVE_UX_FLOW
+endif
 
+ifeq ($(TARGET_NAME),TARGET_NANOX)
+# X specific
 DEFINES       += HAVE_BLE
 DEFINES       += HAVE_BLE_APDU BLE_COMMAND_TIMEOUT_MS=2000
 
 SDK_SOURCE_PATH  += lib_blewbxx lib_blewbxx_impl
-else
-# Assume Nano S
-DEFINES       += IO_SEPROXYHAL_BUFFER_SIZE_B=128
-DEFINES       += COMPLIANCE_UX_160 HAVE_UX_LEGACY HAVE_UX_FLOW
 endif
-
-# X specific
 
 #Feature temporarily disabled
 DEFINES   += LEDGER_SPECIFIC
@@ -128,12 +140,7 @@ endif
 #########################
 
 CC := $(CLANGPATH)clang
-#CFLAGS += -Werror
-CFLAGS += -O3 -Os -Wpedantic -Wall -Wno-unknown-pragmas -Wno-c11-extensions
-# To accept Ledger SDK issues
-CFLAGS += -Wno-missing-declarations -Wno-empty-translation-unit -Wno-language-extension-token
-CFLAGS += -Wno-embedded-directive -Wno-pointer-arith
-CFLAGS += -Wno-typedef-redefinition -Wno-newline-eof
+CFLAGS += -O3 -Os -Wno-unknown-pragmas -Wno-unused-parameter
 
 AS := $(GCCPATH)arm-none-eabi-gcc
 AFLAGS +=
@@ -168,10 +175,13 @@ rust:
 
 # load, delete and listvariants are provided to comply with Ledger requirements
 load:
-	python -m ledgerblue.loadApp $(APP_LOAD_PARAMS)
+	python3 -m ledgerblue.loadApp $(APP_LOAD_PARAMS)
 
 delete:
-	python -m ledgerblue.deleteApp $(COMMON_DELETE_PARAMS)
+	python3 -m ledgerblue.deleteApp $(COMMON_DELETE_PARAMS)
 
 listvariants:
 	@echo VARIANTS COIN RUNE
+
+version:
+	@echo "v$(APPVERSION)" > app.version

@@ -87,7 +87,7 @@ __Z_INLINE parser_error_t calculate_is_default_chainid() {
 
     // get chain_id
     char outKey[2];
-    char outVal[20];
+    char outVal[24];
     uint8_t pageCount;
     INIT_QUERY_CONTEXT(outKey, sizeof(outKey),
                        outVal, sizeof(outVal),
@@ -105,8 +105,8 @@ __Z_INLINE parser_error_t calculate_is_default_chainid() {
             outVal, sizeof(outVal),
             0, &pageCount))
 
-    if (strcmp(outVal, COIN_DEFAULT_CHAINID) != 0) {
-        // If we don't match the default chainid, switch to expert mode
+    if (strncmp(outVal, DEFAULT_CHAINID_PREFIX, strlen(DEFAULT_CHAINID_PREFIX)) != 0) {
+        // If we don't match the default chainid prefix, switch to expert mode
         display_cache.is_default_chain = true;
     }
 

@@ -47,7 +47,7 @@ typedef enum {
 #define APPVERSION_LINE2                   ("v" APPVERSION)
 
 #define CRYPTO_BLOB_SKIP_BYTES              0
-#define COIN_DEFAULT_CHAINID                "thorchain"
+#define DEFAULT_CHAINID_PREFIX              "thorchain"
 
 // In non-expert mode, the app will convert from tor to RUNE
 #define COIN_DEFAULT_DENOM_BASE             "tor"
