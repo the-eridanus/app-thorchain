@@ -1,19 +1,19 @@
 /*******************************************************************************
-*   (c) 2018, 2019 Zondax GmbH
-*   (c) 2016 Ledger
-*
-*  Licensed under the Apache License, Version 2.0 (the "License");
-*  you may not use this file except in compliance with the License.
-*  You may obtain a copy of the License at
-*
-*      http://www.apache.org/licenses/LICENSE-2.0
-*
-*  Unless required by applicable law or agreed to in writing, software
-*  distributed under the License is distributed on an "AS IS" BASIS,
-*  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-*  See the License for the specific language governing permissions and
-*  limitations under the License.
-********************************************************************************/
+ *   (c) 2018, 2019 Zondax GmbH
+ *   (c) 2016 Ledger
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ ********************************************************************************/
 
 #include "app_main.h"
 #include "app_mode.h"
@@ -33,24 +33,23 @@ unsigned char G_io_seproxyhal_spi_buffer[IO_SEPROXYHAL_BUFFER_SIZE_B];
 
 unsigned char io_event(unsigned char channel) {
     switch (G_io_seproxyhal_spi_buffer[0]) {
-        case SEPROXYHAL_TAG_FINGER_EVENT: //
+        case SEPROXYHAL_TAG_FINGER_EVENT:  //
             UX_FINGER_EVENT(G_io_seproxyhal_spi_buffer);
             break;
 
-        case SEPROXYHAL_TAG_BUTTON_PUSH_EVENT: // for Nano S
+        case SEPROXYHAL_TAG_BUTTON_PUSH_EVENT:  // for Nano S
             UX_BUTTON_PUSH_EVENT(G_io_seproxyhal_spi_buffer);
             break;
 
         case SEPROXYHAL_TAG_DISPLAY_PROCESSED_EVENT:
-            if (!UX_DISPLAYED())
-                UX_DISPLAYED_EVENT();
+            if (!UX_DISPLAYED()) UX_DISPLAYED_EVENT();
             break;
 
-        case SEPROXYHAL_TAG_TICKER_EVENT: { //
+        case SEPROXYHAL_TAG_TICKER_EVENT: {  //
             UX_TICKER_EVENT(G_io_seproxyhal_spi_buffer, {
-                    if (UX_ALLOWED) {
-                        UX_REDISPLAY();
-                    }
+                if (UX_ALLOWED) {
+                    UX_REDISPLAY();
+                }
             });
             break;
         }
@@ -63,7 +62,7 @@ unsigned char io_event(unsigned char channel) {
     if (!io_seproxyhal_spi_is_status_sent()) {
         io_seproxyhal_general_status();
     }
-    return 1; // DO NOT reset the current APDU transport
+    return 1;  // DO NOT reset the current APDU transport
 }
 
 unsigned short io_exchange_al(unsigned char channel, unsigned short tx_len) {
@@ -79,7 +78,7 @@ unsigned short io_exchange_al(unsigned char channel, unsigned short tx_len) {
                 if (channel & IO_RESET_AFTER_REPLIED) {
                     reset();
                 }
-                return 0; // nothing received from the master so far (it's a tx
+                return 0;  // nothing received from the master so far (it's a tx
                 // transaction)
             } else {
                 return io_seproxyhal_spi_recv(G_io_apdu_buffer, sizeof(G_io_apdu_buffer), 0);
@@ -99,17 +98,16 @@ void extractHDPath(uint32_t rx, uint32_t offset) {
     MEMCPY(hdPath, G_io_apdu_buffer + offset, sizeof(uint32_t) * HDPATH_LEN_DEFAULT);
 
     // Check values
-    if (hdPath[0] != HDPATH_0_DEFAULT ||
-        hdPath[1] != HDPATH_1_DEFAULT ||
+    if (hdPath[0] != HDPATH_0_DEFAULT || hdPath[1] != HDPATH_1_DEFAULT ||
         hdPath[3] != HDPATH_3_DEFAULT) {
         THROW(APDU_CODE_DATA_INVALID);
     }
 
     // Limit values unless the app is running in expert mode
     if (!app_mode_expert()) {
-        for(int i=2; i < HDPATH_LEN_DEFAULT; i++) {
+        for (int i = 2; i < HDPATH_LEN_DEFAULT; i++) {
             // hardened or unhardened values should be below 20
-            if ( (hdPath[i] & 0x7FFFFFFF) > 100) THROW(APDU_CODE_CONDITIONS_NOT_SATISFIED);
+            if ((hdPath[i] & 0x7FFFFFFF) > 100) THROW(APDU_CODE_CONDITIONS_NOT_SATISFIED);
         }
     }
 }
@@ -180,7 +178,7 @@ void app_init() {
 #ifdef TARGET_NANOX
     // grab the current plane mode setting
     G_io_app.plane_mode = os_setting_get(OS_SETTING_PLANEMODE, NULL, 0);
-#endif // TARGET_NANOX
+#endif  // TARGET_NANOX
 
     USB_power(0);
     USB_power(1);
@@ -196,7 +194,7 @@ void app_init() {
     // Enable Bluetooth
     BLE_power(0, NULL);
     BLE_power(1, "Nano X");
-#endif // HAVE_BLE
+#endif  // HAVE_BLE
 }
 
 #pragma clang diagnostic push
@@ -205,7 +203,7 @@ void app_init() {
 void app_main() {
     volatile uint32_t rx = 0, tx = 0, flags = 0;
 
-   // NOTE: requested from Ledger HQ
+    // NOTE: requested from Ledger HQ
     tx_initialize();
 
     for (;;) {
@@ -222,12 +220,11 @@ void app_main() {
                 flags = 0;
                 CHECK_APP_CANARY()
 
-                if (rx == 0)
-                    THROW(APDU_CODE_EMPTY_BUFFER);
+                if (rx == 0) THROW(APDU_CODE_EMPTY_BUFFER);
 
                 // NOTE: Requested by Ledger
-//                handle_generic_apdu(&flags, &tx, rx);
-//                CHECK_APP_CANARY()
+                //                handle_generic_apdu(&flags, &tx, rx);
+                //                CHECK_APP_CANARY()
 
                 handleApdu(&flags, &tx, rx);
                 CHECK_APP_CANARY()
