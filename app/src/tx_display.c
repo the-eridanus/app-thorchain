@@ -288,7 +288,7 @@ parser_error_t tx_display_query(uint16_t displayIdx,
     CHECK_PARSER_ERR(retrieve_tree_indexes(displayIdx, &root_index, &subitem_index));
 
     // Prepare query
-    char tmp_val[2];
+    static char tmp_val[2];
     INIT_QUERY_CONTEXT(outKey, outKeyLen, tmp_val, sizeof(tmp_val),
                        0, get_root_max_level(root_index))
     parser_tx_obj.query.item_index = subitem_index;
