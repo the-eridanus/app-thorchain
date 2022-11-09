@@ -1,18 +1,18 @@
 /*******************************************************************************
-*  (c) 2019 Zondax GmbH
-*
-*  Licensed under the Apache License, Version 2.0 (the "License");
-*  you may not use this file except in compliance with the License.
-*  You may obtain a copy of the License at
-*
-*      http://www.apache.org/licenses/LICENSE-2.0
-*
-*  Unless required by applicable law or agreed to in writing, software
-*  distributed under the License is distributed on an "AS IS" BASIS,
-*  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-*  See the License for the specific language governing permissions and
-*  limitations under the License.
-********************************************************************************/
+ *  (c) 2019 Zondax GmbH
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ ********************************************************************************/
 
 #include "parser_impl.h"
 
@@ -38,8 +38,7 @@ parser_error_t parser_init_context(parser_context_t *ctx,
 
 parser_error_t parser_init(parser_context_t *ctx, const uint8_t *buffer, size_t bufferSize) {
     parser_error_t err = parser_init_context(ctx, buffer, bufferSize);
-    if (err != parser_ok)
-        return err;
+    if (err != parser_ok) return err;
 
     return err;
 }
@@ -70,12 +69,12 @@ const char *parser_getErrorDescription(parser_error_t err) {
             return "item query returned no results";
         case parser_missing_field:
             return "missing field";
-//////
+            //////
         case parser_display_idx_out_of_range:
             return "display index out of range";
         case parser_display_page_out_of_range:
             return "display page out of range";
-//////
+            //////
         case parser_json_zero_tokens:
             return "JSON. Zero tokens";
         case parser_json_too_many_tokens:
@@ -107,9 +106,7 @@ const char *parser_getErrorDescription(parser_error_t err) {
 }
 
 parser_error_t _readTx(parser_context_t *c, parser_tx_t *v) {
-    parser_error_t err = json_parse(&parser_tx_obj.json,
-                                    (const char *) c->buffer,
-                                    c->bufferLen);
+    parser_error_t err = json_parse(&parser_tx_obj.json, (const char *) c->buffer, c->bufferLen);
     if (err != parser_ok) {
         return err;
     }

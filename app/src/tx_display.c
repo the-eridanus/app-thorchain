@@ -1,18 +1,18 @@
 /*******************************************************************************
-*   (c) 2018, 2019 Zondax GmbH
-*
-*  Licensed under the Apache License, Version 2.0 (the "License");
-*  you may not use this file except in compliance with the License.
-*  You may obtain a copy of the License at
-*
-*      http://www.apache.org/licenses/LICENSE-2.0
-*
-*  Unless required by applicable law or agreed to in writing, software
-*  distributed under the License is distributed on an "AS IS" BASIS,
-*  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-*  See the License for the specific language governing permissions and
-*  limitations under the License.
-********************************************************************************/
+ *   (c) 2018, 2019 Zondax GmbH
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ ********************************************************************************/
 
 #include "coin.h"
 #include "app_mode.h"
@@ -89,21 +89,20 @@ __Z_INLINE parser_error_t calculate_is_default_chainid() {
     char outKey[2];
     char outVal[24];
     uint8_t pageCount;
-    INIT_QUERY_CONTEXT(outKey, sizeof(outKey),
-                       outVal, sizeof(outVal),
-                       0, get_root_max_level(root_item_chain_id))
+    INIT_QUERY_CONTEXT(outKey,
+                       sizeof(outKey),
+                       outVal,
+                       sizeof(outVal),
+                       0,
+                       get_root_max_level(root_item_chain_id))
     parser_tx_obj.query.item_index = 0;
     parser_tx_obj.query._item_index_current = 0;
 
     uint16_t ret_value_token_index;
-    CHECK_PARSER_ERR(tx_traverse_find(
-            display_cache.root_item_start_token_idx[root_item_chain_id],
-            &ret_value_token_index))
+    CHECK_PARSER_ERR(tx_traverse_find(display_cache.root_item_start_token_idx[root_item_chain_id],
+                                      &ret_value_token_index))
 
-    CHECK_PARSER_ERR(tx_getToken(
-            ret_value_token_index,
-            outVal, sizeof(outVal),
-            0, &pageCount))
+    CHECK_PARSER_ERR(tx_getToken(ret_value_token_index, outVal, sizeof(outVal), 0, &pageCount))
 
     if (strncmp(outVal, DEFAULT_CHAINID_PREFIX, strlen(DEFAULT_CHAINID_PREFIX)) != 0) {
         // If we don't match the default chainid prefix, switch to expert mode
@@ -128,11 +127,10 @@ parser_error_t tx_indexRootFields() {
     for (root_item_e root_item_idx = 0; root_item_idx < NUM_REQUIRED_ROOT_PAGES; root_item_idx++) {
         uint16_t req_root_item_key_token_idx = 0;
 
-        parser_error_t err = object_get_value(
-                &parser_tx_obj.json,
-                ROOT_TOKEN_INDEX,
-                get_required_root_item(root_item_idx),
-                &req_root_item_key_token_idx);
+        parser_error_t err = object_get_value(&parser_tx_obj.json,
+                                              ROOT_TOKEN_INDEX,
+                                              get_required_root_item(root_item_idx),
+                                              &req_root_item_key_token_idx);
 
         if (err == parser_no_data) {
             continue;
@@ -146,9 +144,12 @@ parser_error_t tx_indexRootFields() {
         // Now count how many items can be found in this root item
         int32_t current_item_idx = 0;
         while (err == parser_ok) {
-            INIT_QUERY_CONTEXT(tmp_key, sizeof(tmp_key),
-                               tmp_val, sizeof(tmp_val),
-                               0, get_root_max_level(root_item_idx))
+            INIT_QUERY_CONTEXT(tmp_key,
+                               sizeof(tmp_key),
+                               tmp_val,
+                               sizeof(tmp_val),
+                               0,
+                               get_root_max_level(root_item_idx))
             parser_tx_obj.query.item_index = current_item_idx;
             strncpy_s(parser_tx_obj.query.out_key,
                       get_required_root_item(root_item_idx),
@@ -156,20 +157,19 @@ parser_error_t tx_indexRootFields() {
 
             uint16_t ret_value_token_index;
 
-            err = tx_traverse_find(
-                    display_cache.root_item_start_token_idx[root_item_idx],
-                    &ret_value_token_index);
+            err = tx_traverse_find(display_cache.root_item_start_token_idx[root_item_idx],
+                                   &ret_value_token_index);
 
             if (err != parser_ok) {
                 continue;
             }
 
             uint8_t pageCount;
-            CHECK_PARSER_ERR(tx_getToken(
-                    ret_value_token_index,
-                    parser_tx_obj.query.out_val,
-                    parser_tx_obj.query.out_val_len,
-                    0, &pageCount))
+            CHECK_PARSER_ERR(tx_getToken(ret_value_token_index,
+                                         parser_tx_obj.query.out_val,
+                                         parser_tx_obj.query.out_val_len,
+                                         0,
+                                         &pageCount))
 
             // Empty Memo
             if (root_item_idx == root_item_memo && strlen(parser_tx_obj.query.out_val) == 0) {
@@ -206,8 +206,7 @@ bool tx_is_expert_mode() {
 
 __Z_INLINE uint8_t get_subitem_count(root_item_e root_item) {
     CHECK_PARSER_ERR(tx_indexRootFields())
-    if (display_cache.total_item_count == 0)
-        return 0;
+    if (display_cache.total_item_count == 0) return 0;
 
     int16_t tmp_num_items = display_cache.root_item_number_subitems[root_item];
 
@@ -229,7 +228,9 @@ __Z_INLINE uint8_t get_subitem_count(root_item_e root_item) {
     return tmp_num_items;
 }
 
-__Z_INLINE parser_error_t retrieve_tree_indexes(uint8_t display_index, root_item_e *root_item, uint8_t *subitem_index) {
+__Z_INLINE parser_error_t retrieve_tree_indexes(uint8_t display_index,
+                                                root_item_e *root_item,
+                                                uint8_t *subitem_index) {
     // Find root index | display_index idx -> item_index
     // consume indexed subpages until we get the item index in the subpage
     *root_item = 0;
@@ -245,7 +246,7 @@ __Z_INLINE parser_error_t retrieve_tree_indexes(uint8_t display_index, root_item
             // Advance root index and skip empty items
             *subitem_index = 0;
             (*root_item)++;
-            while (get_subitem_count(*root_item) == 0){
+            while (get_subitem_count(*root_item) == 0) {
                 (*root_item)++;
             }
         }
@@ -272,7 +273,8 @@ parser_error_t tx_display_numItems(uint8_t *num_items) {
 
 // This function assumes that the tx_ctx has been set properly
 parser_error_t tx_display_query(uint16_t displayIdx,
-                                char *outKey, uint16_t outKeyLen,
+                                char *outKey,
+                                uint16_t outKeyLen,
                                 uint16_t *ret_value_token_index) {
     CHECK_PARSER_ERR(tx_indexRootFields())
 
@@ -288,9 +290,13 @@ parser_error_t tx_display_query(uint16_t displayIdx,
     CHECK_PARSER_ERR(retrieve_tree_indexes(displayIdx, &root_index, &subitem_index));
 
     // Prepare query
-    char tmp_val[2];
-    INIT_QUERY_CONTEXT(outKey, outKeyLen, tmp_val, sizeof(tmp_val),
-                       0, get_root_max_level(root_index))
+    static char tmp_val[2];
+    INIT_QUERY_CONTEXT(outKey,
+                       outKeyLen,
+                       tmp_val,
+                       sizeof(tmp_val),
+                       0,
+                       get_root_max_level(root_index))
     parser_tx_obj.query.item_index = subitem_index;
     parser_tx_obj.query._item_index_current = 0;
 
@@ -300,9 +306,8 @@ parser_error_t tx_display_query(uint16_t displayIdx,
         return parser_no_data;
     }
 
-    CHECK_PARSER_ERR(tx_traverse_find(
-            display_cache.root_item_start_token_idx[root_index],
-            ret_value_token_index))
+    CHECK_PARSER_ERR(tx_traverse_find(display_cache.root_item_start_token_idx[root_index],
+                                      ret_value_token_index))
 
     return parser_ok;
 }
@@ -322,24 +327,24 @@ parser_error_t tx_display_query(uint16_t displayIdx,
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 
 static const key_subst_t key_substitutions[] = {
-        // Common
-        {"account_number",                    "Account"},
-        {"chain_id",                          "Chain ID"},
-        {"fee/gas",                           "Gas"},
-        {"fee/amount",                        "Fee"},
-        {"sequence",                          "Sequence"},
-        {"memo",                              "Memo"},
-        {"msgs/type",                         "Type"},
+    // Common
+    {"account_number", "Account"},
+    {"chain_id", "Chain ID"},
+    {"fee/gas", "Gas"},
+    {"fee/amount", "Fee"},
+    {"sequence", "Sequence"},
+    {"memo", "Memo"},
+    {"msgs/type", "Type"},
 
-        // MsgSend
-        {"msgs/value/from_address",           "From"},
-        {"msgs/value/to_address",             "To"},
-        {"msgs/value/amount",                 "Amount"},
+    // MsgSend
+    {"msgs/value/from_address", "From"},
+    {"msgs/value/to_address", "To"},
+    {"msgs/value/amount", "Amount"},
 
-        // MsgDeposit
-        {"msgs/value/signer",                  "Sender"},
-        {"msgs/value/memo",                    "Memo"},
-        {"msgs/value/coins",                   "Amount"},
+    // MsgDeposit
+    {"msgs/value/signer", "Sender"},
+    {"msgs/value/memo", "Memo"},
+    {"msgs/value/coins", "Amount"},
 };
 
 parser_error_t tx_display_make_friendly() {
@@ -348,11 +353,12 @@ parser_error_t tx_display_make_friendly() {
     // post process keys
     for (size_t i = 0; i < array_length(key_substitutions); i++) {
         if (!strcmp(parser_tx_obj.query.out_key, key_substitutions[i].str1)) {
-            strncpy_s(parser_tx_obj.query.out_key, key_substitutions[i].str2, parser_tx_obj.query.out_key_len);
+            strncpy_s(parser_tx_obj.query.out_key,
+                      key_substitutions[i].str2,
+                      parser_tx_obj.query.out_key_len);
             break;
         }
     }
 
     return parser_ok;
 }
-

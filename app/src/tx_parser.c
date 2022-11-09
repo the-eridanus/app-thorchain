@@ -1,18 +1,18 @@
 /*******************************************************************************
-*   (c) 2018, 2019 Zondax GmbH
-*
-*  Licensed under the Apache License, Version 2.0 (the "License");
-*  you may not use this file except in compliance with the License.
-*  You may obtain a copy of the License at
-*
-*      http://www.apache.org/licenses/LICENSE-2.0
-*
-*  Unless required by applicable law or agreed to in writing, software
-*  distributed under the License is distributed on an "AS IS" BASIS,
-*  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-*  See the License for the specific language governing permissions and
-*  limitations under the License.
-********************************************************************************/
+ *   (c) 2018, 2019 Zondax GmbH
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ ********************************************************************************/
 
 #include <jsmn.h>
 #include <stdio.h>
@@ -23,8 +23,11 @@
 // strcat but source does not need to be terminated (a chunk from a bigger string is concatenated)
 // dst_max is measured in bytes including the space for NULL termination
 // src_size does not include NULL termination
-__Z_INLINE void strcat_chunk_s(char *dst, uint16_t dst_max, const char *src_chunk, size_t src_chunk_size) {
-    *(dst + dst_max - 1) = 0;                 // last character terminates with zero in case we go beyond bounds
+__Z_INLINE void strcat_chunk_s(char *dst,
+                               uint16_t dst_max,
+                               const char *src_chunk,
+                               size_t src_chunk_size) {
+    *(dst + dst_max - 1) = 0;  // last character terminates with zero in case we go beyond bounds
     const size_t prev_size = strlen(dst);
 
     size_t space_left = dst_max - prev_size - 1;  // -1 because requires termination
@@ -50,14 +53,16 @@ __Z_INLINE void strcat_chunk_s(char *dst, uint16_t dst_max, const char *src_chun
 ///////////////////////////
 
 static const key_subst_t value_substitutions[] = {
-        {"thorchain/MsgSend",                     "Send"},
-        {"thorchain/MsgDeposit",                  "Deposit"},
-        {"[]",                                    "Empty"},
+    {"thorchain/MsgSend", "Send"},
+    {"thorchain/MsgDeposit", "Deposit"},
+    {"[]", "Empty"},
 };
 
 parser_error_t tx_getToken(uint16_t token_index,
-                           char *out_val, uint16_t out_val_len,
-                           uint8_t pageIdx, uint8_t *pageCount) {
+                           char *out_val,
+                           uint16_t out_val_len,
+                           uint8_t pageIdx,
+                           uint8_t *pageCount) {
     *pageCount = 0;
     MEMZERO(out_val, out_val_len);
 
@@ -84,10 +89,7 @@ parser_error_t tx_getToken(uint16_t token_index,
             }
         }
 
-        pageStringExt(out_val, out_val_len,
-                      inValue, inLen,
-                      pageIdx, pageCount);
-
+        pageStringExt(out_val, out_val_len, inValue, inLen, pageIdx, pageCount);
     }
 
     if (pageIdx >= *pageCount) {
@@ -100,10 +102,7 @@ parser_error_t tx_getToken(uint16_t token_index,
 __Z_INLINE void append_key_item(int16_t token_index) {
     if (*parser_tx_obj.query.out_key > 0) {
         // There is already something there, add separator
-        strcat_chunk_s(parser_tx_obj.query.out_key,
-                       parser_tx_obj.query.out_key_len,
-                       "/",
-                       1);
+        strcat_chunk_s(parser_tx_obj.query.out_key, parser_tx_obj.query.out_key_len, "/", 1);
     }
 
     const int16_t token_start = parser_tx_obj.json.tokens[token_index].start;
@@ -133,9 +132,7 @@ parser_error_t tx_traverse_find(int16_t root_token_index, uint16_t *ret_value_to
     }
 
     if (parser_tx_obj.query.max_level <= 0 || parser_tx_obj.query.max_depth <= 0 ||
-        token_type == JSMN_STRING ||
-        token_type == JSMN_PRIMITIVE) {
-
+        token_type == JSMN_STRING || token_type == JSMN_PRIMITIVE) {
         CHECK_APP_CANARY()
 
         // Early bail out
@@ -162,8 +159,10 @@ parser_error_t tx_traverse_find(int16_t root_token_index, uint16_t *ret_value_to
                 uint16_t key_index;
                 uint16_t value_index;
 
-                CHECK_PARSER_ERR(object_get_nth_key(&parser_tx_obj.json, root_token_index, i, &key_index));
-                CHECK_PARSER_ERR(object_get_nth_value(&parser_tx_obj.json, root_token_index, i, &value_index));
+                CHECK_PARSER_ERR(
+                    object_get_nth_key(&parser_tx_obj.json, root_token_index, i, &key_index));
+                CHECK_PARSER_ERR(
+                    object_get_nth_value(&parser_tx_obj.json, root_token_index, i, &value_index));
 
                 // Skip writing keys if we are actually exploring to count
                 append_key_item(key_index);
@@ -192,7 +191,8 @@ parser_error_t tx_traverse_find(int16_t root_token_index, uint16_t *ret_value_to
             for (int16_t i = 0; i < el_count; ++i) {
                 uint16_t element_index;
                 CHECK_PARSER_ERR(array_get_nth_element(&parser_tx_obj.json,
-                                                       root_token_index, i,
+                                                       root_token_index,
+                                                       i,
                                                        &element_index));
                 CHECK_APP_CANARY()
 

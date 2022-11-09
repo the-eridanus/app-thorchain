@@ -27,11 +27,11 @@ bool_t bignumLittleEndian_bcdprint(char *outBuffer, uint16_t outBufferLen,
     }
 
     if (inBCDLen * 2 > outBufferLen) {
-        strcpy(outBuffer, "ERR");
+        strlcpy(outBuffer, "ERR", outBufferLen);
         return bool_false;
     }
 
-    for (uint8_t i = 0; i < inBCDLen; i++, inBCD++) {
+    for (uint16_t i = 0; i < inBCDLen; i++, inBCD++) {
         if (started || *inBCD != 0) {
             if (started || (*inBCD >> 4u) != 0) {
                 *outBuffer = hexchars[*inBCD >> 4u];
@@ -44,7 +44,7 @@ bool_t bignumLittleEndian_bcdprint(char *outBuffer, uint16_t outBufferLen,
     }
 
     if (!started) {
-        strcpy(outBuffer, "0");
+        strlcpy(outBuffer, "0", outBufferLen);
     }
 
     return bool_true;
@@ -55,7 +55,7 @@ void bignumLittleEndian_to_bcd(uint8_t *bcdOut, uint16_t bcdOutLen,
     MEMZERO(bcdOut, bcdOutLen);
 
     uint8_t carry = 0;
-    for (uint16_t bitIdx = 0; bitIdx < binValueLen * 8; bitIdx++) {
+    for (uint16_t bitIdx = 0; bitIdx < binValueLen * (uint16_t)8U; bitIdx++) {
         // Fix bcd
         for (uint16_t j = 0; j < bcdOutLen; j++) {
             if ((bcdOut[j] & 0x0Fu) > 0x04u) {
@@ -92,11 +92,11 @@ bool_t bignumBigEndian_bcdprint(char *outBuffer, uint16_t outBufferLen,
     }
 
     if (bcdInLen * 2 > outBufferLen) {
-        strcpy(outBuffer, "ERR");
+        strlcpy(outBuffer, "ERR", outBufferLen);
         return bool_false;
     }
 
-    for (uint8_t i = 0; i < bcdInLen; i++) {
+    for (uint16_t i = 0; i < bcdInLen; i++) {
         uint8_t v = bcdIn[bcdInLen - i - 1];
         if (started || v != 0) {
             if (started || (v >> 4u) != 0) {
@@ -110,7 +110,7 @@ bool_t bignumBigEndian_bcdprint(char *outBuffer, uint16_t outBufferLen,
     }
 
     if (!started) {
-        strcpy(outBuffer, "0");
+        strlcpy(outBuffer, "0", outBufferLen);
     }
 
     return bool_true;
@@ -121,7 +121,7 @@ void bignumBigEndian_to_bcd(uint8_t *bcdOut, uint16_t bcdOutLen,
     MEMZERO(bcdOut, bcdOutLen);
 
     uint8_t carry = 0;
-    for (uint16_t bitIdx = 0; bitIdx < binValueLen * 8; bitIdx++) {
+    for (uint16_t bitIdx = 0; bitIdx < binValueLen * (uint16_t)8U; bitIdx++) {
         // Fix bcd
         for (uint16_t j = 0; j < bcdOutLen; j++) {
             if ((bcdOut[j] & 0x0Fu) > 0x04u) {

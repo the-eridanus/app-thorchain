@@ -234,7 +234,7 @@ void splitValueField() {
     print_value2("");
     uint16_t vlen = strlen(viewdata.value);
     if (vlen > MAX_CHARS_PER_VALUE2_LINE - 1) {
-        strcpy(viewdata.value2, viewdata.value + MAX_CHARS_PER_VALUE_LINE);
+        strlcpy(viewdata.value2, viewdata.value + MAX_CHARS_PER_VALUE_LINE, MAX_CHARS_PER_VALUE2_LINE);
         viewdata.value[MAX_CHARS_PER_VALUE_LINE] = 0;
     }
 }
@@ -314,9 +314,9 @@ void h_expert_toggle() {
 }
 
 void h_expert_update() {
-    strcpy(viewdata.value, "disabled");
+    strlcpy(viewdata.value, "disabled", sizeof(viewdata.value));
     if (app_mode_expert()) {
-        strcpy(viewdata.value, "enabled");
+        strlcpy(viewdata.value, "enabled", sizeof(viewdata.value));
     }
 }
 
