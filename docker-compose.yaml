@@ -1,0 +1,17 @@
+version: "3.7"
+
+services:
+  nanosp:
+    # platform: linux/arm64/v8
+    image: ghcr.io/blooo-io/speculos:latest
+    volumes:
+      - ./app/build/nanos2/bin:/speculos/apps
+      - ./app/src:/app/app/src
+      - ./deps:/app/deps
+    ports:
+      - "5000:5000" # api
+      - "40000:40000" # apdu
+    environment:
+      - GDB_DIRECTORY_LIST="/app/app/src:/app/deps"
+    command: "-d --model nanosp apps/app.elf --display headless --apdu-port 40000 "
+    # Add `--vnc-password "<password>"` for macos users to use built-in vnc client.
