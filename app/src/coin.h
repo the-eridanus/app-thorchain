@@ -57,10 +57,10 @@ typedef enum {
 #define COIN_DEFAULT_CHAINID                "thorchain"
 
 // In non-expert mode, the app will convert from uatom to ATOM
-#define COIN_DEFAULT_DENOM_BASE             "tor"
+#define COIN_DEFAULT_DENOM_BASE             "rune"
 #define COIN_DEFAULT_DENOM_REPR             "RUNE"
 #define COIN_DEFAULT_DENOM_FACTOR           8u
-#define COIN_DEFAULT_DENOM_TRIMMING         8u
+#define COIN_DEFAULT_DENOM_TRIMMING         0u
 
 // Coin denoms may be up to 128 characters long
 // https://github.com/cosmos/cosmos-sdk/blob/master/types/coin.go#L780
