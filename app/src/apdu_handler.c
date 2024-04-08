@@ -37,9 +37,6 @@
 
 #include "chain_config.h"
 
-static const char *msg_error1 = "Expert Mode";
-static const char *msg_error2 = "Required";
-
 __Z_INLINE void handle_getversion(__Z_UNUSED volatile uint32_t *flags, volatile uint32_t *tx, __Z_UNUSED uint32_t rx) {
 #ifdef DEBUG
     G_io_apdu_buffer[0] = 0xFF;
