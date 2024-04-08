@@ -115,9 +115,17 @@ __Z_INLINE bool parser_areEqual(uint16_t tokenIdx, const char *expected) {
 }
 
 __Z_INLINE bool parser_isAmount(char *key) {
-    if (strcmp(key, "msgs/value/coins") == 0) return true;
+    if (strcmp(key, "msgs/value/coins") == 0){
+        return true;
+    }
 
-    if (strcmp(key, "msgs/value/amount") == 0) return true;
+    if (strcmp(key, "fee/amount") == 0) {
+        return true;
+    }
+
+    if (strcmp(key, "msgs/value/amount") == 0) {
+        return true;
+    }
 
     return false;
 }
