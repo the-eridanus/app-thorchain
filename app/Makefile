@@ -50,7 +50,7 @@ endef
 $(error "$(error_message)")
 endif
 
-APP_LOAD_PARAMS = $(COMMON_LOAD_PARAMS) --path $(APPPATH)
+APP_LOAD_PARAMS = --curve secp256k1 $(COMMON_LOAD_PARAMS) --path $(APPPATH)
 
 ENABLE_PENDING_REVIEW_SCREEN ?= 1
 
