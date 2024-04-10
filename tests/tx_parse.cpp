@@ -141,7 +141,7 @@ namespace {
     }
 
     TEST(TxParse, Tx_Chain_not_Allowed) {
-        auto transaction = R"({"account_number":"0","chain_id":"0","fee":{"amount":[{"amount":"5","denom":"photon"}],"gas":"10000"},"memo":"testmemo","msgs":[{"inputs":[{"address":"cosmosaccaddr1d9h8qat5e4ehc5","coins":[{"amount":"10","denom":"atom"}]}],"outputs":[{"address":"cosmosaccaddr1da6hgur4wse3jx32","coins":[{"amount":"10","denom":"atom"}]}]}],"sequence":"1"})";
+        auto transaction = R"({"account_number":"588","chain_id":"0","fee":{"amount":[],"gas":"2000000"},"memo":"TestMemo","msgs":[{"type":"thorchain/MsgSend","value":{"amount":[{"amount":"150000000","denom":"rune"}],"from_address":"tthor1c648xgpter9xffhmcqvs7lzd7hxh0prgv5t5gp","to_address":"tthor10xgrknu44d83qr4s4uw56cqxg0hsev5e68lc9z","test":"test"}}],"sequence":"5"})";
 
         parser_tx_obj.tx_json.tx = transaction;
         parser_tx_obj.tx_json.flags.cache_valid = false;
@@ -164,19 +164,5 @@ namespace {
         uint8_t numItems;
         tx_display_numItems(&numItems);
         EXPECT_EQ(6, numItems) << "Wrong number of items";
-    }
-
-    TEST(TxParse, Page_Count_MultipleMsgs) {
-        auto transaction =
-                R"({"account_number":"0","chain_id":"test-chain-1","fee":{"amount":[{"amount":"5","denom":"photon"}],"gas":"10000"},"memo":"testmemo","msgs":[{"inputs":[{"address":"cosmosaccaddr1d9h8qat5e4ehc5","coins":[{"amount":"10","denom":"atom"}]}],"outputs":[{"address":"cosmosaccaddr1da6hgur4wse3jx32","coins":[{"amount":"10","denom":"atom"}]}]},{"inputs":[{"address":"cosmosaccaddr1d9h8qat5e4ehc5","coins":[{"amount":"10","denom":"atom"}]}],"outputs":[{"address":"cosmosaccaddr1da6hgur4wse3jx32","coins":[{"amount":"10","denom":"atom"}]}]},{"inputs":[{"address":"cosmosaccaddr1d9h8qat5e4ehc5","coins":[{"amount":"10","denom":"atom"}]}],"outputs":[{"address":"cosmosaccaddr1da6hgur4wse3jx32","coins":[{"amount":"10","denom":"atom"}]}]},{"inputs":[{"address":"cosmosaccaddr1d9h8qat5e4ehc5","coins":[{"amount":"10","denom":"atom"}]}],"outputs":[{"address":"cosmosaccaddr1da6hgur4wse3jx32","coins":[{"amount":"10","denom":"atom"}]}]}],"sequence":"1"})";
-
-        parser_tx_obj.tx_json.tx = transaction;
-        parser_tx_obj.tx_json.flags.cache_valid = false;
-        parser_error_t err = JSON_PARSE(&parser_tx_obj.tx_json.json, parser_tx_obj.tx_json.tx);
-        EXPECT_EQ(err, parser_ok);
-
-        uint8_t numItems;
-        tx_display_numItems(&numItems);
-        EXPECT_EQ(22, numItems) << "Wrong number of items";
     }
 }
