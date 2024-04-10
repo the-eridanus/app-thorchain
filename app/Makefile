@@ -50,7 +50,7 @@ endef
 $(error "$(error_message)")
 endif
 
-APP_LOAD_PARAMS = --curve secp256k1 $(COMMON_LOAD_PARAMS) --path $(APPPATH)
+APP_LOAD_PARAMS = $(COMMON_LOAD_PARAMS) --path $(APPPATH)
 
 ENABLE_PENDING_REVIEW_SCREEN ?= 1
 
@@ -66,9 +66,35 @@ endif
 include $(CURDIR)/../deps/ledger-zxlib/makefiles/Makefile.platform
 DEFINES += HAVE_HASH HAVE_BLAKE2 HAVE_SHA256 HAVE_SHA512
 CFLAGS += -I$(MY_DIR)/../deps/tinycbor/src
-CFLAGS += -g3 -ggdb3 -O1
+CFLAGS += -g3 -ggdb3 -Og
 APP_SOURCE_PATH += $(MY_DIR)/../deps/tinycbor-ledger
 APP_SOURCE_PATH += $(MY_DIR)/../deps/jsmn/src
+
+#DEBUG = 10
+
+# Enabling debug PRINTF_S
+ifneq ($(DEBUG),0)
+        $(warning DEBUG enabled)
+        DEFINES += OS_IO_SEPROXYHAL HAVE_BAGL HAVE_SPRINTF
+	DEFINES += HAVE_STACK_OVERFLOW_CHECK
+	SDK_SOURCE_PATH  += lib_stusb lib_stusb_impl lib_u2f
+	DEFINES   += HAVE_IO_USB HAVE_L4_USBLIB IO_HID_EP_LENGTH=64 HAVE_USB_APDU
+
+        ifeq ($(DEBUG),10)
+                $(warning Using semihosted PRINTF_S. Only run with speculos!)
+                CFLAGS    += -include src/dbg/debug.h
+                DEFINES   += HAVE_PRINTF PRINTF_S=semihosted_printf
+        else
+                ifeq ($(TARGET_NAME),TARGET_NANOX)
+                        DEFINES   += HAVE_PRINTF PRINTF_S=mcu_usb_printf
+                else
+                        DEFINES   += HAVE_PRINTF PRINTF_S=screen_printf
+                endif
+
+        endif
+else
+        DEFINES   += PRINTF_S\(...\)=
+endif
 
 .PHONY: rust
 rust:
