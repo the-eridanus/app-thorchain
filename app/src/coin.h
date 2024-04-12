@@ -55,7 +55,6 @@ typedef enum {
 
 #define COIN_DEFAULT_CHAINID                "thorchain"
 
-// In non-expert mode, the app will convert from uatom to ATOM
 #define COIN_DEFAULT_DENOM_BASE             "rune"
 #define COIN_DEFAULT_DENOM_REPR             "RUNE"
 #define COIN_DEFAULT_DENOM_FACTOR           8u
