@@ -177,11 +177,7 @@ __Z_INLINE parser_error_t parser_formatAmountItem(uint16_t amountToken,
         return parser_unexpected_field;
     }
 
-    if (!parser_areEqual(amountToken + 1u, "amount")) {
-        return parser_unexpected_field;
-    }
-
-    if (!parser_areEqual(amountToken + 3u, "denom")) {
+    if (parser_tx_obj.tx_json.json.tokens[amountToken + 2].type != JSMN_STRING) {
         return parser_unexpected_field;
     }
 

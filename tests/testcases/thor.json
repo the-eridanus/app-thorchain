@@ -271,4 +271,93 @@
     ],
     "expert": true
   },
+  {
+    "name": "msgDepositMultipleAmountsExpert",
+    "tx": {
+      "account_number": "588",
+      "chain_id": "thorchain",
+      "fee": {
+          "amount": [],
+          "gas": "10000000"
+      },
+      "memo": "",
+      "msgs": [
+          {
+              "type": "thorchain/MsgDeposit",
+              "value": {
+                  "coins": [
+                      {
+                          "amount": "330000000",
+                          "asset": "THOR.RUNE"
+                      },
+                      {
+                        "amount": "220000000",
+                        "asset": "BSC.USDT"
+                    }
+                  ],
+                  "memo": "SWAP:BNB.BNB:tbnb1qk2m905ypazwfau9cn0qnr4c4yxz63v9u9md20:",
+                  "signer": "tthor1c648xgpter9xffhmcqvs7lzd7hxh0prgv5t5gp"
+              }
+          }
+      ],
+      "sequence": "6"
+    },
+    "parsingErr": "No error",
+    "validationErr": "No error",
+    "expected": [
+      "0 | Chain ID : thorchain",
+      "1 | Account : 588",
+      "2 | Sequence : 6",
+      "3 | Type : Deposit",
+      "4 | Amount [1/2] : 330000000 THOR.RUNE",
+      "4 | Amount [2/2] : 220000000 BSC.USDT",
+      "5 | Memo [1/2] : SWAP:BNB.BNB:tbnb1qk2m905ypazwfau9cn0qn",
+      "5 | Memo [2/2] : r4c4yxz63v9u9md20:",
+      "6 | Sender [1/2] : tthor1c648xgpter9xffhmcqvs7lzd7hxh0prgv",
+      "6 | Sender [2/2] : 5t5gp",
+      "7 | Fee : Empty",
+      "8 | Gas : 10000000"
+    ],
+    "expert": true
+  },
+  {
+    "name": "msgDepositNoMemoExpert",
+    "tx": {
+      "account_number": "588",
+      "chain_id": "thorchain",
+      "fee": {
+          "amount": [],
+          "gas": "10000000"
+      },
+      "msgs": [
+          {
+              "type": "thorchain/MsgDeposit",
+              "value": {
+                  "coins": [
+                      {
+                          "amount": "330000000",
+                          "asset": "THOR.RUNE"
+                      }
+                  ],
+                  "signer": "tthor1c648xgpter9xffhmcqvs7lzd7hxh0prgv5t5gp"
+              }
+          }
+      ],
+      "sequence": "6"
+    },
+    "parsingErr": "No error",
+    "validationErr": "JSON Missing memo",
+    "expected": [
+      "0 | Chain ID : thorchain",
+      "1 | Account : 588",
+      "2 | Sequence : 6",
+      "3 | Type : Deposit",
+      "4 | Amount : 330000000 THOR.RUNE",
+      "5 | Sender [1/2] : tthor1c648xgpter9xffhmcqvs7lzd7hxh0prgv",
+      "5 | Sender [2/2] : 5t5gp",
+      "6 | Fee : Empty",
+      "7 | Gas : 10000000"
+    ],
+    "expert": true
+  }
 ]

@@ -94,4 +94,8 @@ describe('Thor', function () {
     await signAndVerifyTransaction(m, 'sign_msgSend', example_tx_str_MsgSend);
   });
 
+  test.concurrent.each(DEVICE_MODELS)('sign msgDeposit normal', async function (m) {
+    await signAndVerifyTransaction(m, 'sign_msgDeposit', example_tx_str_MsgDeposit);
+  });
+
 })
