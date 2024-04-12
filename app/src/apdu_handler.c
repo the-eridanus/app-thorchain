@@ -113,8 +113,7 @@ static void extractHDPath_HRP(uint32_t rx, uint32_t offset) {
 
     // Check if HRP was sent
     if ((rx - offset) > sizeof(uint32_t) * HDPATH_LEN_DEFAULT) {
-        uint8_t hrp_bech32_len = extractHRP(rx, offset + sizeof(uint32_t) * HDPATH_LEN_DEFAULT);
-        encoding = checkChainConfig(hdPath[1], bech32_hrp, hrp_bech32_len);
+        encoding = checkChainConfig(hdPath[1]);
         if (encoding == UNSUPPORTED) {
             ZEMU_LOGF(50, "Chain config not supported for: %s\n", bech32_hrp)
             THROW(APDU_CODE_COMMAND_NOT_ALLOWED);
@@ -160,7 +159,7 @@ __Z_INLINE void handleGetAddrSecp256K1(volatile uint32_t *flags, volatile uint32
     extractHDPath(rx, OFFSET_DATA + 1 + len);
 
     // Verify encoding
-    encoding = checkChainConfig(hdPath[1], bech32_hrp, bech32_hrp_len);
+    encoding = checkChainConfig(hdPath[1]);
     if (encoding == UNSUPPORTED) {
         ZEMU_LOGF(50, "Chain config not supported for: %s\n", bech32_hrp)
         THROW(APDU_CODE_COMMAND_NOT_ALLOWED);
