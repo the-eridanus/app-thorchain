@@ -106,7 +106,6 @@ First three items in the derivation path will be hardened automatically hardened
 |       |          |                        | 1 = add   |
 |       |          |                        | 2 = last  |
 | P2    | byte (1) | Transaction Format     | 0 = json  |
-|       |          |                        | 1 = textual |
 | L     | byte (1) | Bytes in payload       | (depends) |
 
 The first packet/chunk includes only the derivation path and HRP.

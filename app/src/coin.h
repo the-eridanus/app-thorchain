@@ -37,7 +37,6 @@ typedef enum {
 
 typedef enum {
     tx_json = 0,
-    tx_textual
 } tx_type_e;
 
 typedef enum {

@@ -78,7 +78,7 @@ static parser_tx_t tx_obj;
 
 const char *tx_parse(tx_type_e type)
 {
-    if (type != tx_json && type != tx_textual) {
+    if (type != tx_json) {
         return parser_getErrorDescription(parser_value_out_of_range);
     }
 
@@ -114,7 +114,7 @@ void tx_parse_reset()
 
 zxerr_t tx_getNumItems(uint8_t *num_items)
 {
-    parser_error_t err = parser_getNumItems(&ctx_parsed_tx, num_items);
+    parser_error_t err = parser_getNumItems(num_items);
 
     if (err != parser_ok)
     {
@@ -138,8 +138,7 @@ zxerr_t tx_getItem(int8_t displayIdx,
         return zxerr_no_data;
     }
 
-    parser_error_t err = parser_getItem(&ctx_parsed_tx,
-                                        displayIdx,
+    parser_error_t err = parser_getItem(displayIdx,
                                         outKey, outKeyLen,
                                         outVal, outValLen,
                                         pageIdx, pageCount);

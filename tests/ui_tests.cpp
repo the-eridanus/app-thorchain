@@ -27,7 +27,6 @@
 
 
 using ::testing::TestWithParam;
-using ::testing::Values;
 
 void validate_testcase(const testcase_t &tc) {
     parser_context_t ctx;
@@ -67,7 +66,7 @@ void check_testcase(const testcase_t &tc) {
     if (err != parser_ok)
         return;
 
-    auto output = dumpUI(&ctx, 40, 40);
+    auto output = dumpUI(40, 40);
 
     for (const auto &i : output) {
         std::cout << i << std::endl;

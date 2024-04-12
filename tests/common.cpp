@@ -25,13 +25,12 @@
 #include "gmock/gmock.h"
 #include "coin.h"
 
-std::vector<std::string> dumpUI(parser_context_t *ctx,
-                                uint16_t maxKeyLen,
+std::vector<std::string> dumpUI(uint16_t maxKeyLen,
                                 uint16_t maxValueLen) {
     auto answer = std::vector<std::string>();
 
     uint8_t numItems;
-    parser_error_t err = parser_getNumItems(ctx, &numItems);
+    parser_error_t err = parser_getNumItems(&numItems);
     if (err != parser_ok) {
         return answer;
     }
@@ -45,8 +44,7 @@ std::vector<std::string> dumpUI(parser_context_t *ctx,
         while (pageIdx < pageCount) {
             std::stringstream ss;
 
-            err = parser_getItem(ctx,
-                                 idx,
+            err = parser_getItem(idx,
                                  keyBuffer, maxKeyLen,
                                  valueBuffer, maxValueLen,
                                  pageIdx, &pageCount);

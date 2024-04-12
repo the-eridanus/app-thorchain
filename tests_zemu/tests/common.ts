@@ -18,7 +18,6 @@ import { DEFAULT_START_OPTIONS, IDeviceModel } from '@zondax/zemu'
 const Resolve = require('path').resolve
 
 export const AMINO_JSON_TX = 0x0
-export const TEXTUAL_TX = 0x1
 export const APP_SEED = 'equip will roof matter pink blind book anxiety banner elbow sun young'
 
 const APP_PATH_S = Resolve('../app/output/app_s.elf')
