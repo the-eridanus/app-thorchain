@@ -32,15 +32,15 @@ $(info ************ TARGET_NAME  = [$(TARGET_NAME)])
 include $(CURDIR)/../deps/ledger-zxlib/makefiles/Makefile.app_testing
 
 ifndef COIN
-COIN=ATOM
+COIN=RUNE
 endif
 
 $(info COIN  = [$(COIN)])
 
-ifeq ($(COIN),ATOM)
+ifeq ($(COIN),RUNE)
 # Main app configuration
-APPNAME = "Cosmos"
-APPPATH = "44'/118'" --path "44'/60'"
+APPNAME = "THORChain"
+APPPATH = "44'/931'"
 else
 define error_message
 
@@ -51,6 +51,8 @@ $(error "$(error_message)")
 endif
 
 APP_LOAD_PARAMS = --curve secp256k1 $(COMMON_LOAD_PARAMS) --path $(APPPATH)
+
+ENABLE_PENDING_REVIEW_SCREEN ?= 1
 
 include $(CURDIR)/../deps/ledger-zxlib/makefiles/Makefile.devices
 
@@ -64,8 +66,10 @@ endif
 include $(CURDIR)/../deps/ledger-zxlib/makefiles/Makefile.platform
 DEFINES += HAVE_HASH HAVE_BLAKE2 HAVE_SHA256 HAVE_SHA512
 CFLAGS += -I$(MY_DIR)/../deps/tinycbor/src
+CFLAGS += -g3 -ggdb3 -O3
 APP_SOURCE_PATH += $(MY_DIR)/../deps/tinycbor-ledger
 APP_SOURCE_PATH += $(MY_DIR)/../deps/jsmn/src
+
 
 .PHONY: rust
 rust:
@@ -87,7 +91,7 @@ dep/%.d: %.c Makefile
 
 .PHONY: listvariants
 listvariants:
-	@echo VARIANTS COIN ATOM
+	@echo VARIANTS COIN RUNE
 
 .PHONY: version
 version:

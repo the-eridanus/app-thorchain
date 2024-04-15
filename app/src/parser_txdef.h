@@ -40,12 +40,6 @@ typedef struct screen_arg_t {
     bool expert;
 } screen_arg_t;
 
-typedef struct tx_textual_t{
-    size_t n_containers;
-    uint8_t n_expert;
-    uint8_t tmpBuffer[625];
-} tx_textual_t;
-
 typedef struct {
     // These are internal values used for tracking the state of the query/search
     uint16_t _item_index_current;
@@ -103,7 +97,6 @@ typedef struct {
 
      union {
         tx_json_t tx_json;
-        tx_textual_t tx_text;
      };
 } parser_tx_t;
 

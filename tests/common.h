@@ -27,6 +27,6 @@ else FAIL() << "One of the strings is null"; }
 
 parser_error_t parse_tx(parsed_json_t *parsed_json, const char *tx);
 
-std::vector<std::string> dumpUI(parser_context_t *ctx, uint16_t maxKeyLen, uint16_t maxValueLen);
+std::vector<std::string> dumpUI(uint16_t maxKeyLen, uint16_t maxValueLen);
 
 #define JSON_PARSE(parsed_json, buffer) json_parse(parsed_json, buffer, strlen(buffer))

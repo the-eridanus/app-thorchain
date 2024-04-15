@@ -52,11 +52,7 @@ parser_error_t parser_parse(parser_context_t *ctx,
 
     CHECK_PARSER_ERR(parser_init_context(ctx, data, dataLen))
     ctx->tx_obj = tx_obj;
-    if (tx_obj->tx_type == tx_textual) {
-        CHECK_PARSER_ERR(_read_text_tx(ctx, tx_obj))
-    } else {
-        CHECK_PARSER_ERR(_read_json_tx(ctx, tx_obj))
-    }
+    CHECK_PARSER_ERR(_read_json_tx(ctx, tx_obj))
 
     extraDepthLevel = false;
     return parser_ok;
@@ -69,77 +65,33 @@ parser_error_t parser_validate(const parser_context_t *ctx) {
 
     // Iterate through all items to check that all can be shown and are valid
     uint8_t numItems = 0;
-    CHECK_PARSER_ERR(parser_getNumItems(ctx, &numItems))
+    CHECK_PARSER_ERR(parser_getNumItems(&numItems))
 
     char tmpKey[40];
     char tmpVal[40];
     uint8_t pageCount = 0;
     for (uint8_t idx = 0; idx < numItems; idx++) {
-        CHECK_PARSER_ERR(parser_getItem(ctx, idx, tmpKey, sizeof(tmpKey), tmpVal, sizeof(tmpVal), 0, &pageCount))
+        CHECK_PARSER_ERR(parser_getItem(idx, tmpKey, sizeof(tmpKey), tmpVal, sizeof(tmpVal), 0, &pageCount))
     }
     return parser_ok;
 }
 
-parser_error_t parser_getNumItems(const parser_context_t *ctx, uint8_t *num_items) {
+parser_error_t parser_getNumItems(uint8_t *num_items) {
     *num_items = 0;
-    if (ctx->tx_obj->tx_type == tx_textual) {
-        *num_items = app_mode_expert() ? (uint8_t) ctx->tx_obj->tx_text.n_containers : (uint8_t) (ctx->tx_obj->tx_text.n_containers - ctx->tx_obj->tx_text.n_expert);
-        return parser_ok;
-    }
 
     return tx_display_numItems(num_items);
 }
 
-__Z_INLINE bool parser_areEqual(uint16_t tokenIdx, const char *expected) {
-    if (parser_tx_obj.tx_json.json.tokens[tokenIdx].type != JSMN_STRING) {
-        return false;
-    }
-
-    int32_t len = parser_tx_obj.tx_json.json.tokens[tokenIdx].end - parser_tx_obj.tx_json.json.tokens[tokenIdx].start;
-    if (len < 0) {
-        return false;
-    }
-
-    if (strlen(expected) != (size_t) len) {
-        return false;
-    }
-
-    const char *p = parser_tx_obj.tx_json.tx + parser_tx_obj.tx_json.json.tokens[tokenIdx].start;
-    for (int32_t i = 0; i < len; i++) {
-        if (expected[i] != *(p + i)) {
-            return false;
-        }
-    }
-
-    return true;
-}
-
 __Z_INLINE bool parser_isAmount(char *key) {
+    if (strcmp(key, "msgs/value/coins") == 0){
+        return true;
+    }
+
     if (strcmp(key, "fee/amount") == 0) {
         return true;
     }
 
-    if (strcmp(key, "msgs/inputs/coins") == 0) {
-        return true;
-    }
-
-    if (strcmp(key, "msgs/outputs/coins") == 0) {
-        return true;
-    }
-
-    if (strcmp(key, "msgs/value/inputs/coins") == 0) {
-        return true;
-    }
-
-    if (strcmp(key, "msgs/value/outputs/coins") == 0) {
-        return true;
-    }
-
     if (strcmp(key, "msgs/value/amount") == 0) {
-        return true;
-    }
-
-    if (strcmp(key, "tip/amount") == 0) {
         return true;
     }
 
@@ -193,11 +145,7 @@ __Z_INLINE parser_error_t parser_formatAmountItem(uint16_t amountToken,
         return parser_unexpected_field;
     }
 
-    if (!parser_areEqual(amountToken + 1u, "amount")) {
-        return parser_unexpected_field;
-    }
-
-    if (!parser_areEqual(amountToken + 3u, "denom")) {
+    if (parser_tx_obj.tx_json.json.tokens[amountToken + 2].type != JSMN_STRING) {
         return parser_unexpected_field;
     }
 
@@ -311,176 +259,7 @@ __Z_INLINE parser_error_t parser_formatAmount(uint16_t amountToken,
     return parser_formatAmountItem(showItemTokenIdx, outVal, outValLen, showPageIdx, &dummy);
 }
 
-__Z_INLINE parser_error_t parser_screenPrint(const parser_context_t *ctx,
-                                            Cbor_container *container,
-                                            char *outKey, uint16_t outKeyLen,
-                                            char *outVal, uint16_t outValLen,
-                                            uint8_t pageIdx, uint8_t *pageCount) {
-
-    //verification assures that content + title < size(tmp), to be used in string manipulation
-    if (container->screen.titleLen > MAX_TITLE_SIZE || container->screen.contentLen > MAX_CONTENT_SIZE) {
-        return parser_unexpected_value;
-    }
-    MEMZERO(ctx->tx_obj->tx_text.tmpBuffer, sizeof(ctx->tx_obj->tx_text.tmpBuffer));
-    char *tmp = (char*) ctx->tx_obj->tx_text.tmpBuffer;
-    size_t tmp_len = sizeof(ctx->tx_obj->tx_text.tmpBuffer);
-    char out[OUTPUT_HANDLER_SIZE] = {0};
-
-    // No Tittle screen
-    if (container->screen.titleLen == 0) {
-        MEMCPY(tmp, container->screen.contentPtr, container->screen.contentLen);
-        CHECK_PARSER_ERR(tx_display_translation(out, sizeof(out),tmp, container->screen.contentLen))
-
-        for (uint8_t i = 0; i < container->screen.indent; i++) {
-            z_str3join(out, sizeof(out), SCREEN_INDENT, "");
-        }
-
-        snprintf(outKey, outKeyLen, " ");
-        pageString(outVal, outValLen, out, pageIdx, pageCount);
-        return parser_ok;
-    }
-
-    //Translate output, cpy to tmp to assure it ends in \0
-    MEMZERO(tmp, tmp_len);
-    if(container->screen.contentPtr == NULL) {
-        return parser_unexpected_value;
-    }
-    MEMCPY(tmp, container->screen.contentPtr, container->screen.contentLen);
-    CHECK_PARSER_ERR(tx_display_translation(out, sizeof(out), tmp,container->screen.contentLen))
-
-    uint8_t titleLen = container->screen.titleLen + container->screen.indent;
-    //Title needs to be truncated, so we concat title witn content
-    if ((titleLen > PRINTABLE_TITLE_SIZE ) || (outValLen > 0 && ((strlen(out)/outValLen) >= 1
-        && titleLen > PRINTABLE_PAGINATED_TITLE_SIZE))) {
-
-        char key[MAX_TITLE_SIZE + 2] = {0};
-        MEMCPY(key, TITLE_TRUNCATE_REPLACE, strlen(TITLE_TRUNCATE_REPLACE));
-        for (uint8_t i = 0; i < container->screen.indent; i++) {
-            z_str3join(key, sizeof(key), SCREEN_INDENT, "");
-        }
-
-        MEMZERO(ctx->tx_obj->tx_text.tmpBuffer, sizeof(ctx->tx_obj->tx_text.tmpBuffer));
-        if(container->screen.titlePtr == NULL) {
-            return parser_unexpected_value;
-        }
-        MEMCPY(tmp, container->screen.titlePtr, container->screen.titleLen);
-        MEMCPY(tmp + container->screen.titleLen,": ",2);
-        MEMCPY(tmp + container->screen.titleLen + 2, out, sizeof(out) - container->screen.titleLen -2);
-        snprintf(outKey, outKeyLen, "%s", key);
-        pageString(outVal, outValLen, tmp, pageIdx, pageCount);
-        return parser_ok;
-    }
-
-    //Normal print case - Prepare title
-    char key[MAX_TITLE_SIZE + 2] = {0};
-    if(container->screen.titlePtr == NULL) {
-        return parser_unexpected_value;
-    }
-    MEMCPY(key, container->screen.titlePtr, container->screen.titleLen);
-    for (uint8_t i = 0; i < container->screen.indent; i++) {
-        z_str3join(key, sizeof(key), SCREEN_INDENT, "");
-    }
-    snprintf(outKey, outKeyLen, "%s", key);
-    pageString(outVal, outValLen, out, pageIdx, pageCount);
-
-    return parser_ok;
-}
-
-__Z_INLINE parser_error_t parser_getScreenInfo(const parser_context_t *ctx,
-                                               Cbor_container *container,
-                                               uint8_t index) {
-    CborValue it;
-    CborValue containerArray_ptr;
-    CborValue mapStruct_ptr;
-    INIT_CBOR_PARSER(ctx, mapStruct_ptr)
-
-    PARSER_ASSERT_OR_ERROR(!cbor_value_at_end(&mapStruct_ptr), parser_unexpected_buffer_end)
-    PARSER_ASSERT_OR_ERROR(cbor_value_is_map(&mapStruct_ptr), parser_unexpected_type)
-    CHECK_CBOR_MAP_ERR(cbor_value_enter_container(&mapStruct_ptr, &it))
-    CHECK_CBOR_MAP_ERR(cbor_value_advance(&it))
-    CHECK_CBOR_MAP_ERR(cbor_value_enter_container(&it, &containerArray_ptr))
-
-    for (int i = 0; i < index ; i ++) {
-        CHECK_CBOR_MAP_ERR(cbor_value_advance(&containerArray_ptr))
-    }
-
-    CborValue data;
-    CHECK_CBOR_MAP_ERR(cbor_value_get_map_length(&containerArray_ptr, &container->n_field))
-    CHECK_CBOR_MAP_ERR(cbor_value_enter_container(&containerArray_ptr, &data))
-    CHECK_PARSER_ERR(cbor_get_containerInfo(&data, container))
-
-   return parser_ok;
-}
-
-__Z_INLINE parser_error_t parser_getNextNonExpert(const parser_context_t *ctx,
-                                                Cbor_container *container,
-                                                uint8_t displayIdx) {
-
-    PARSER_ASSERT_OR_ERROR(displayIdx < ctx->tx_obj->tx_text.n_containers, parser_unexpected_value);
-
-    uint8_t non_expert = 0;
-    for (size_t containerIdx = 0; containerIdx < ctx->tx_obj->tx_text.n_containers; containerIdx++) {
-        parser_getScreenInfo(ctx, container, containerIdx);
-        if (!container->screen.expert) {
-            non_expert++;
-        } else {
-            continue;
-        }
-        if (non_expert == displayIdx + 1) {
-            break;
-        }
-        PARSER_ASSERT_OR_ERROR(non_expert <= displayIdx, parser_unexpected_value);
-    }
-    return parser_ok;
-}
-
-__Z_INLINE parser_error_t parser_getTextualItem(const parser_context_t *ctx,
-                                            uint8_t displayIdx,
-                                            char *outKey, uint16_t outKeyLen,
-                                            char *outVal, uint16_t outValLen,
-                                            uint8_t pageIdx, uint8_t *pageCount) {
-    *pageCount = 0;
-
-    MEMZERO(outKey, outKeyLen);
-    MEMZERO(outVal, outValLen);
-
-    uint8_t numItems;
-    CHECK_PARSER_ERR(parser_getNumItems(ctx, &numItems))
-    PARSER_ASSERT_OR_ERROR((numItems != 0), parser_unexpected_number_items)
-    PARSER_ASSERT_OR_ERROR((displayIdx < numItems), parser_display_idx_out_of_range)
-
-    CHECK_APP_CANARY()
-
-    Cbor_container container;
-    container.screen.titlePtr = NULL;
-    container.screen.titleLen = 0;
-    container.screen.contentPtr = NULL;
-    container.screen.contentLen = 0;
-    container.screen.indent = 0;
-    container.screen.expert = false;
-    CHECK_PARSER_ERR(parser_getScreenInfo(ctx, &container, displayIdx))
-
-    // title and content can be Null depending on the screen for chain id they cant be null
-    if (container.screen.titlePtr != NULL && container.screen.contentPtr != NULL) {
-        if (!strncmp(container.screen.titlePtr, "Chain id", container.screen.titleLen)){
-            if(!strncmp(container.screen.contentPtr, "0", container.screen.contentLen) ||
-               !strncmp(container.screen.contentPtr, "1", container.screen.contentLen)) {
-                return parser_unexpected_chain;
-         }
-     }
-    }
-
-    if (!app_mode_expert()) {
-        CHECK_PARSER_ERR(parser_getNextNonExpert(ctx, &container, displayIdx))
-    }
-
-    CHECK_PARSER_ERR(parser_screenPrint(ctx, &container, outKey, outKeyLen, outVal, outValLen, pageIdx, pageCount))
-
-    return parser_ok;
-}
-
-__Z_INLINE parser_error_t parser_getJsonItem(const parser_context_t *ctx,
-                              uint8_t displayIdx,
+__Z_INLINE parser_error_t parser_getJsonItem(uint8_t displayIdx,
                               char *outKey, uint16_t outKeyLen,
                               char *outVal, uint16_t outValLen,
                               uint8_t pageIdx, uint8_t *pageCount) {
@@ -492,7 +271,7 @@ __Z_INLINE parser_error_t parser_getJsonItem(const parser_context_t *ctx,
     MEMZERO(outVal, outValLen);
 
     uint8_t numItems;
-    CHECK_PARSER_ERR(parser_getNumItems(ctx, &numItems))
+    CHECK_PARSER_ERR(parser_getNumItems(&numItems))
     CHECK_APP_CANARY()
 
     if (numItems == 0) {
@@ -528,24 +307,15 @@ __Z_INLINE parser_error_t parser_getJsonItem(const parser_context_t *ctx,
     return parser_ok;
 }
 
-parser_error_t parser_getItem(const parser_context_t *ctx,
-                              uint8_t displayIdx,
+parser_error_t parser_getItem(uint8_t displayIdx,
                               char *outKey, uint16_t outKeyLen,
                               char *outVal, uint16_t outValLen,
                               uint8_t pageIdx, uint8_t *pageCount) {
 
-    if (ctx->tx_obj->tx_type == tx_textual) {
-        CHECK_PARSER_ERR(parser_getTextualItem(ctx,displayIdx,
+    CHECK_PARSER_ERR(parser_getJsonItem(displayIdx,
                         outKey, outKeyLen,
                         outVal, outValLen,
                         pageIdx, pageCount));
-
-    } else {
-        CHECK_PARSER_ERR(parser_getJsonItem(ctx,displayIdx,
-                        outKey, outKeyLen,
-                        outVal, outValLen,
-                        pageIdx, pageCount));
-    }
 
     return parser_ok;
 }

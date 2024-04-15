@@ -1,4 +1,4 @@
-# Cosmos App - Ledger Nano S
+# THORChain App - Ledger Nano S
 ## General structure
 
 The general structure of commands and responses is as follows:
@@ -64,7 +64,7 @@ The general structure of commands and responses is as follows:
 
 --------------
 
-### INS_GET_ADDR
+### INS_GET_ADDR_SECP256K1
 
 #### Command
 
@@ -79,7 +79,7 @@ The general structure of commands and responses is as follows:
 | HRP_LEN    | byte(1)        | Bech32 HRP Length              | 1<=HRP_LEN<=83 |
 | HRP        | byte (HRP_LEN) | Bech32 HRP                     |                |
 | Path[0]    | byte (4)       | Derivation Path Data           | 44             |
-| Path[1]    | byte (4)       | Derivation Path Data           | 118 / 60       |
+| Path[1]    | byte (4)       | Derivation Path Data           | 931            |
 | Path[2]    | byte (4)       | Derivation Path Data           | ?              |
 | Path[3]    | byte (4)       | Derivation Path Data           | ?              |
 | Path[4]    | byte (4)       | Derivation Path Data           | ?              |
@@ -106,11 +106,9 @@ First three items in the derivation path will be hardened automatically hardened
 |       |          |                        | 1 = add   |
 |       |          |                        | 2 = last  |
 | P2    | byte (1) | Transaction Format     | 0 = json  |
-|       |          |                        | 1 = textual |
 | L     | byte (1) | Bytes in payload       | (depends) |
 
 The first packet/chunk includes only the derivation path and HRP.
-At the moment, seding HRP is optional but it will be mandatory in a future version.
 
 All other packets/chunks should contain message to sign
 
@@ -118,13 +116,11 @@ All other packets/chunks should contain message to sign
 
 | Field      | Type     | Content                | Expected  |
 | ---------- | -------- | ---------------------- | --------- |
-| Path[0]    | byte (4)       | Derivation Path Data           | 44             |
-| Path[1]    | byte (4)       | Derivation Path Data           | 118 / 60       |
-| Path[2]    | byte (4)       | Derivation Path Data           | ?              |
-| Path[3]    | byte (4)       | Derivation Path Data           | ?              |
-| Path[4]    | byte (4)       | Derivation Path Data           | ?              |
-| HRP_LEN    | byte(1)        | Bech32 HRP Length              | 1<=HRP_LEN<=83 |
-| HRP        | byte (HRP_LEN) | Bech32 HRP                     |                |
+| Path[0]    | byte (4) | Derivation Path Data   | 44        |
+| Path[1]    | byte (4) | Derivation Path Data   | 931       |
+| Path[2]    | byte (4) | Derivation Path Data   | ?         |
+| Path[3]    | byte (4) | Derivation Path Data   | ?         |
+| Path[4]    | byte (4) | Derivation Path Data   | ?         |
 
 *Other Chunks/Packets*
 

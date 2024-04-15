@@ -29,4 +29,3 @@ typedef struct {
 } testcase_t;
 
 std::vector<testcase_t> GetJsonTestCases(const std::string& filename);
-std::vector<testcase_t> GetJsonTextualTestCases(const std::string &jsonFile);

@@ -384,7 +384,7 @@ __Z_INLINE parser_error_t get_subitem_count(root_item_e root_item, uint8_t *num_
         case root_item_fee:
             CHECK_PARSER_ERR(tx_is_expert_mode_or_not_default_chainid(&is_expert_or_default))
             if (!is_expert_or_default) {
-                tmp_num_items = 1;     // Only Amount
+                tmp_num_items = 0;
             }
             break;
         case root_item_tip:
@@ -508,42 +508,17 @@ static const key_subst_t key_substitutions[] = {
         {"memo",                              "Memo"},
         {"fee/amount",                        "Fee"},
         {"fee/gas",                           "Gas"},
-        {"fee/gas_limit",                     "Gas Limit"},
-        {"fee/granter",                       "Granter"},
-        {"fee/payer",                         "Payer"},
         {"msgs/type",                         "Type"},
 
-        {"tip/amount",                        "Tip"},
-        {"tip/tipper",                        "Tipper"},
-
-        {"msgs/inputs/address",               "Source Address"},
-        {"msgs/inputs/coins",                 "Source Coins"},
-        {"msgs/outputs/address",              "Dest Address"},
-        {"msgs/outputs/coins",                "Dest Coins"},
-
-        {"msgs/value/inputs/address",         "Source Address"},
-        {"msgs/value/inputs/coins",           "Source Coins"},
-        {"msgs/value/outputs/address",        "Dest Address"},
-        {"msgs/value/outputs/coins",          "Dest Coins"},
-
+        // MsgSend
         {"msgs/value/from_address",           "From"},
         {"msgs/value/to_address",             "To"},
         {"msgs/value/amount",                 "Amount"},
-        {"msgs/value/delegator_address",      "Delegator"},
-        {"msgs/value/validator_address",      "Validator"},
-        {"msgs/value/withdraw_address",       "Withdraw Address"},
-        {"msgs/value/validator_src_address",  "Validator Source"},
-        {"msgs/value/validator_dst_address",  "Validator Dest"},
-        {"msgs/value/description",            "Description"},
-        {"msgs/value/initial_deposit/amount", "Deposit Amount"},
-        {"msgs/value/initial_deposit/denom",  "Deposit Denom"},
-        {"msgs/value/proposal_type",          "Proposal"},
-        {"msgs/value/proposer",               "Proposer"},
-        {"msgs/value/title",                  "Title"},
-        {"msgs/value/depositor",              "Sender"},
-        {"msgs/value/proposal_id",            "Proposal ID"},
-        {"msgs/value/voter",                  "Description"},
-        {"msgs/value/option",                 "Option"},
+
+        // MsgDeposit
+        {"msgs/value/signer", "Sender"},
+        {"msgs/value/memo", "Memo"},
+        {"msgs/value/coins", "Amount"},
 };
 
 parser_error_t tx_display_make_friendly() {

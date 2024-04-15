@@ -46,7 +46,6 @@ const char *tx_parse(tx_type_e type);
 
 /// Return the number of items in the transaction
 zxerr_t tx_getNumItems(uint8_t *num_items);
-zxerr_t tx_getTextualNumItems(uint8_t *num_items);
 
 /// Gets an specific item from the transaction (including paging)
 zxerr_t tx_getItem(int8_t displayIdx,

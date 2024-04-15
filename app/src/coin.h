@@ -24,8 +24,7 @@ extern "C" {
 #define HDPATH_LEN_DEFAULT   5
 
 #define HDPATH_0_DEFAULT     (0x80000000u | 0x2cu)
-#define HDPATH_1_DEFAULT     (0x80000000u | 0x76u)
-#define HDPATH_ETH_1_DEFAULT (0x80000000u | 0x3cu)
+#define HDPATH_1_DEFAULT     (0x80000000u | 0x3a3u)
 #define HDPATH_2_DEFAULT     (0x80000000u | 0u)
 #define HDPATH_3_DEFAULT     (0u)
 
@@ -38,7 +37,6 @@ typedef enum {
 
 typedef enum {
     tx_json = 0,
-    tx_textual
 } tx_type_e;
 
 typedef enum {
@@ -50,18 +48,17 @@ typedef enum {
 #define VIEW_ADDRESS_OFFSET_SECP256K1       PK_LEN_SECP256K1
 #define VIEW_ADDRESS_LAST_PAGE_DEFAULT      0
 
-#define MENU_MAIN_APP_LINE1                "Cosmos"
+#define MENU_MAIN_APP_LINE1                "THORChain"
 #define MENU_MAIN_APP_LINE2                "Ready"
 #define APPVERSION_LINE1                   "Version:"
 #define APPVERSION_LINE2                   ("v" APPVERSION)
 
-#define COIN_DEFAULT_CHAINID                "cosmoshub-4"
+#define COIN_DEFAULT_CHAINID                "thorchain"
 
-// In non-expert mode, the app will convert from uatom to ATOM
-#define COIN_DEFAULT_DENOM_BASE             "uatom"
-#define COIN_DEFAULT_DENOM_REPR             "ATOM"
-#define COIN_DEFAULT_DENOM_FACTOR           6u
-#define COIN_DEFAULT_DENOM_TRIMMING         6u
+#define COIN_DEFAULT_DENOM_BASE             "rune"
+#define COIN_DEFAULT_DENOM_REPR             "RUNE"
+#define COIN_DEFAULT_DENOM_FACTOR           8u
+#define COIN_DEFAULT_DENOM_TRIMMING         0u
 
 // Coin denoms may be up to 128 characters long
 // https://github.com/cosmos/cosmos-sdk/blob/master/types/coin.go#L780
