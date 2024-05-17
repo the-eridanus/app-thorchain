@@ -22,6 +22,10 @@
 #define EQUALS(_P, _Q, _LEN) (MEMCMP( (const void*) PIC(_P), (const void*) PIC(_Q), (_LEN))==0)
 
 parser_error_t json_parse(parsed_json_t *parsed_json, const char *buffer, uint16_t bufferLen) {
+    if (parsed_json == NULL) {
+        return parser_init_context_empty;
+    }
+
     jsmn_parser parser;
     jsmn_init(&parser);
 
@@ -78,7 +82,7 @@ parser_error_t array_get_element_count(const parsed_json_t *json,
                                        uint16_t array_token_index,
                                        uint16_t *number_elements) {
     *number_elements = 0;
-    if (array_token_index < 0 || array_token_index > json->numberOfTokens) {
+    if (array_token_index > json->numberOfTokens) {
         return parser_no_data;
     }
 

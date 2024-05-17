@@ -154,6 +154,10 @@ Many of our integration tests expect the device to be configured with a known te
 
 ### Loading into your development device
 
+To easily setup a development environment for compilation and loading on a physical device, you can use the [VSCode integration](https://marketplace.visualstudio.com/items?itemName=LedgerHQ.ledger-dev-tools) whether you are on Linux, macOS or Windows.
+
+If you prefer using a terminal to perform the steps manually, you can do the following:
+
 The Makefile will build the firmware in a docker container and leave the binary in the correct directory.
 
 - Build
@@ -163,9 +167,10 @@ The Makefile will build the firmware in a docker container and leave the binary 
    ```
 
 - Upload to a device
-   The following command will upload the application to the ledger. _Warning: The application will be deleted before uploading._
+   The following commands will upload the application to the ledger. _Warning: The application will be deleted before uploading._
    ```
-   make load          # Builds and loads the app to the device
+   make shellS          # Or shellS2, shellX
+   make load
    ```
 
 ## APDU Specifications

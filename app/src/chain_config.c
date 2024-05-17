@@ -17,7 +17,7 @@
 #include <zxmacros.h>
 
 address_encoding_e checkChainConfig(uint32_t path) {
-    // Always allowed for 118 (default Cosmos)
+    // Always allowed for 931 (default THORChain)
     if (path == HDPATH_1_DEFAULT) {
         return BECH32_COSMOS;
     }
