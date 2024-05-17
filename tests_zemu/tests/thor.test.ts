@@ -16,7 +16,7 @@
 
 import Zemu, { ClickNavigation, TouchNavigation, IDeviceModel } from '@zondax/zemu'
 // @ts-ignore
-import { CosmosApp } from '@zondax/ledger-cosmos-js'
+import { ThorchainApp } from '@blooo/ledger-thorchain-js'
 import {
   defaultOptions,
   DEVICE_MODELS,
@@ -37,7 +37,7 @@ async function signAndVerifyTransaction(m: IDeviceModel, test_name: String, tran
   const sim = new Zemu(m.path);
   try {
     await sim.start({ ...defaultOptions, model: m.name });
-    const app = new CosmosApp(sim.getTransport());
+    const app = new ThorchainApp(sim.getTransport());
 
     const path = [44, 931, 0, 0, 0];
     const tx = Buffer.from(JSON.stringify(transaction), "utf-8");
@@ -50,7 +50,7 @@ async function signAndVerifyTransaction(m: IDeviceModel, test_name: String, tran
     console.log(respPk);
 
     // do not wait here..
-    const signatureRequest = app.sign(path, tx, hrp, AMINO_JSON_TX);
+    const signatureRequest = app.sign(path, tx, AMINO_JSON_TX);
 
     // Wait until we are not in the main menu
     await sim.waitUntilScreenIsNot(sim.getMainMenuSnapshot());
