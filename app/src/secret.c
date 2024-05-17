@@ -29,7 +29,6 @@ void secret_accept() {
 #endif
 }
 
-//static char *secret_message = "";
 
 zxerr_t secret_getNumItems(uint8_t *num_items) {
     *num_items = 0;

@@ -38,6 +38,10 @@ int8_t is_space(char c) {
 }
 
 int8_t contains_whitespace(parsed_json_t *json) {
+    if (json == NULL){
+        return 1;
+    }
+
     int start = 0;
     const int last_element_index = json->tokens[0].end;
 

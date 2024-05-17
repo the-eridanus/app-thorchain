@@ -27,6 +27,7 @@ extern "C" {
 #include "zxerror.h"
 
 #define MAX_BECH32_HRP_LEN      83u
+#define ETH_ADDRESS_OFFSET      12u
 
 extern uint32_t hdPath[HDPATH_LEN_DEFAULT];
 extern char bech32_hrp[MAX_BECH32_HRP_LEN + 1];
