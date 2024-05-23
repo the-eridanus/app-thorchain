@@ -112,10 +112,6 @@ parser_error_t array_get_nth_element(const parsed_json_t *json,
                                      uint16_t array_token_index,
                                      uint16_t element_index,
                                      uint16_t *token_index) {
-    if (array_token_index < 0 || array_token_index > json->numberOfTokens) {
-        return parser_no_data;
-    }
-
     jsmntok_t array_token = json->tokens[array_token_index];
     *token_index = array_token_index;
 
@@ -147,10 +143,6 @@ parser_error_t object_get_element_count(const parsed_json_t *json,
                                         uint16_t object_token_index,
                                         uint16_t *element_count) {
     *element_count = 0;
-    if (object_token_index < 0 || object_token_index > json->numberOfTokens) {
-        return parser_no_data;
-    }
-
     jsmntok_t object_token = json->tokens[object_token_index];
     uint16_t token_index = object_token_index;
     uint16_t prev_element_end = object_token.start;
@@ -179,10 +171,6 @@ parser_error_t object_get_nth_key(const parsed_json_t *json,
                                   uint16_t object_element_index,
                                   uint16_t *token_index) {
     *token_index = object_token_index;
-    if (object_token_index < 0 || object_token_index > json->numberOfTokens) {
-        return parser_no_data;
-    }
-
     jsmntok_t object_token = json->tokens[object_token_index];
     uint16_t element_count = 0;
     uint16_t prev_element_end = object_token.start;
@@ -214,10 +202,6 @@ parser_error_t object_get_nth_value(const parsed_json_t *json,
                                     uint16_t object_token_index,
                                     uint16_t object_element_index,
                                     uint16_t *key_index) {
-    if (object_token_index < 0 || object_token_index > json->numberOfTokens) {
-        return parser_no_data;
-    }
-
     CHECK_PARSER_ERR(object_get_nth_key(json, object_token_index, object_element_index, key_index))
     (*key_index)++;
 
@@ -228,10 +212,6 @@ parser_error_t object_get_value(const parsed_json_t *json,
                                 uint16_t object_token_index,
                                 const char *key_name,
                                 uint16_t *token_index) {
-    if (object_token_index < 0 || object_token_index > json->numberOfTokens) {
-        return parser_no_data;
-    }
-
     const jsmntok_t object_token = json->tokens[object_token_index];
 
     *token_index = object_token_index;
