@@ -17,7 +17,6 @@
 
 #ifdef __cplusplus
 #pragma clang diagnostic push
-#pragma ide diagnostic ignored "modernize-deprecated-headers"
 #endif
 
 #include "json/json_parser.h"

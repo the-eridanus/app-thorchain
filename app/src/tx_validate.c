@@ -39,7 +39,7 @@ int8_t is_space(char c) {
 
 int8_t contains_whitespace(parsed_json_t *json) {
     if (json == NULL){
-        return 1;
+        return 2;
     }
 
     int start = 0;
@@ -132,8 +132,14 @@ int8_t dictionaries_sorted(parsed_json_t *json) {
 }
 
 parser_error_t tx_validate(parsed_json_t *json) {
-    if (contains_whitespace(json) == 1) {
+    int8_t whitespace_check = contains_whitespace(json);
+
+    if (whitespace_check == 1) {
         return parser_json_contains_whitespace;
+    }
+
+    if (whitespace_check == 2) {
+        return parser_json_unexpected_error;
     }
 
     if (dictionaries_sorted(json) != 1) {

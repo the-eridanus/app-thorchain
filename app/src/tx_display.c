@@ -15,7 +15,6 @@
 ********************************************************************************/
 #ifdef __cplusplus
 #pragma clang diagnostic push
-#pragma ide diagnostic ignored "misc-no-recursion"
 #endif
 
 #include "coin.h"
@@ -58,7 +57,6 @@ const char *get_required_root_item(root_item_e i) {
 
 #ifdef __cplusplus
 #pragma clang diagnostic push
-#pragma ide diagnostic ignored "bugprone-branch-clone"
 #endif
 
 __Z_INLINE uint8_t get_root_max_level(root_item_e i) {
