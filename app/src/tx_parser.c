@@ -15,7 +15,6 @@
 ********************************************************************************/
 #ifdef __cplusplus
 #pragma clang diagnostic push
-#pragma ide diagnostic ignored "misc-no-recursion"
 #endif
 
 #include <jsmn.h>
